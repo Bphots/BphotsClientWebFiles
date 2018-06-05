@@ -1,0 +1,910 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- <base href="https://www.bphots.com/"> -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+  <title>MMR Page</title>
+  <link rel="stylesheet" type="text/css" href="style.css?v=0.15">
+</head>
+
+<body>
+
+  <div id="app" style="width: 100%; height: 100%;" v-cloak>
+    <div class="advice-box wrapper-centralize" style="width: 100%; height: 100%;">
+      <div class="btn-close" @click="closeWindow()"></div>
+      <div class="container-centralize" style="width: 100%; height: 232px; margin: 0 20px;">
+        <div class="mode-list" :class="{'hint-shine': !modeSelected}">
+          <div class="mode-item" v-for="mode in modeList" :class="{'active': modeSelected === mode}" @click="modeSelected = mode">
+            <div v-text="langs[mode]"></div>
+          </div>
+        </div>
+        <div class="mmr-box" :class="{'active': modeSelected, 'single-table': players['left'].length > 0 && players['right'].length === 0}">
+          <table v-for="side in ['left', 'right']" :class="'part-' + getColor(side) + ' ' + 'part-' + side">
+            <thead>
+              <tr class="header">
+                <th v-for="col in colsHeader" :class="col.className" v-text="col.title"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="player of getOrderByDesc(players[side])">
+                <!-- <td><span class="badge"></span></td> -->
+                <td>
+                  <!--<div class="cell-name"-->
+                  <!--@mouseenter="onMedalMouseenter(player)"-->
+                  <!--@mouseleave="onMedalMouseleave()"-->
+                  <!--@mousemove.stop="onMedalMousemove($event)">-->
+                  <!--<img v-if="player.medalPic" :src="'statics/medal/' + player.medalPic" class="player-medal">-->
+                  <!--<span v-text="player.name"></span>-->
+                  <!--</div>-->
+
+                  <div class="cell-name" @mouseenter="onMedalMouseenter(player)" @mouseleave="onMedalMouseleave()" @mousemove.stop="onMedalMousemove($event)">
+                    <a v-if="player.medalLink" :href="player.medalLink" style="text-decoration: none" :class="'part-' + getColor(side)" target="_blank">
+                      <img v-if="player.medalPic" :src="'statics/medal/' + player.medalPic" class="player-medal">
+                      <span v-text="player.name"></span>
+                    </a>
+                    <a v-else>
+                      <img v-if="player.medalPic" :src="'statics/medal/' + player.medalPic" class="player-medal">
+                      <span v-text="player.name"></span>
+                    </a>
+                  </div>
+
+                </td>
+                <td class="cell-center">
+                  <div class="cell-stars" v-if="player.heroStatics" @mouseenter="onStarsMouseenter(player)" @mouseleave="onStarsMouseleave()"
+                    @mousemove.stop="onStarsMousemove($event)">
+                    <div class="hero-stars" :class="'level-' + player.heroStars">
+                      <div class="portrait-wrapper">
+                        <div class="portrait-border" v-if="player.heroStars === 5"></div>
+                        <img class="hero-portrait" :src="getPrefixUrl(getPortraitFromList(player))">
+                      </div>
+                      <div class="star-bg">
+                        <div v-for="_i of 5" class="star star-loading"></div>
+                      </div>
+                      <div class="star-dots" v-if="player.staticsParsed">
+                        <!-- <div v-for="_i of player.heroStars" class="star star-solid"></div>
+                    <div v-for="_i of (5 - player.heroStars)" class="star star-blank"></div> -->
+                        <div v-for="_i of 5" class="star"></div>
+                        <div class="clear"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="cell-stars" v-if="!player.heroStatics">
+                    <span v-text="langs['Loading']"></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-map">
+                    <span v-if="player.mapStatics" v-text="player.mapStatics.winPercent + '%'"></span>
+                    <span v-else>-</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-mmr" v-text="getPlayerMMRtext(player)"></div>
+                </td>
+              </tr>
+              <tr v-if="players[side].length < 5">
+                <td :colspan="colsHeader.length" :style="'height:' + (((5 - players[side].length) * 26) - 2) + 'px'">&nbsp;</td>
+              </tr>
+            </tbody>
+            <thead>
+              <tr>
+                <td :colspan="colsHeader.length" style="text-align: center;">
+                  <span v-html="getAverage(side)"></span>
+                </td>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div class="mmr-hint">
+          <span v-text="autoCloseText" @click="sec = null" style="white-space:pre;"></span>
+          <span v-text="'*' + langs['Source by hotslogs.com']" style="float: left;"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="refresh-button" :class="{'refresh-button-ban': refreshSleep}" @click="refresh()">
+            <path fill="currentColor" d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"></path>
+          </svg>
+          <button v-if="mmrReady >= 10" class="btn-copy" @click="copy" style="float: right;position: relative;">
+            <span class="cpy-info" :style="{'opacity': cpy ? 0 : 1}">{{ langs['Copy advice'] }}</span>
+            <span class="success-cpy" :style="{'opacity': cpy ? 1 : 0}">{{ langs['Copied'] }}</span>
+          </button>
+          <span style="clear: both;"></span>
+        </div>
+      </div>
+    </div>
+    <div class="medal-tips" v-if="medalOnHover && medalOnHover.medalName" :style="{'top': medalTipsY + 'px', 'left': medalTipsX + 'px'}">
+      <span v-text="medalOnHover.medalName"></span>
+      <span v-if="medalOnHover.medalDesc" v-text="': ' + medalOnHover.medalDesc"></span>
+    </div>
+    <div class="star-tips" v-if="playerOnHover" :style="{'top': starTipsY + 'px', 'left': starTipsX + 'px'}">
+      <span v-if="playerOnHover.hero !== 'Fail'" v-text="langs['records'] + ':'"></span>
+      <span v-if="playerOnHover.hero !== 'Fail'" v-text="playerOnHover.heroStatics.gamesPlayed"></span>
+      <span v-if="playerOnHover.hero !== 'Fail'" v-text="langs['winPercent'] + ':'"></span>
+      <span v-if="playerOnHover.hero !== 'Fail'" v-text="playerOnHover.heroStatics.winPercent"></span>
+      <span v-if="playerOnHover.hero === 'Fail'">{{ langs['Hots Patch Wrong'] }}</span>
+    </div>
+    <div class="preload" style="display: none">
+      <img src="statics/images/lightning-border.png">
+    </div>
+  </div>
+
+  <script type="text/javascript" src="clipboard.min.js"></script>
+  <script type="text/javascript">
+    function isUndefined(target) {
+      return typeof target === 'undefined'
+    }
+    function callInvoker(method, params) {
+      if (isUndefined(window.CallbackObject) ||
+        isUndefined(window.CallbackObject.callback)) {
+        return false
+      }
+      console.log(method)
+      console.log(params)
+      //params.unshift(method)
+      window.CallbackObject.callback(method, params)
+    }
+    // var apiRoot = 'http://www.bphots.com/bp_helper/'
+    var apiRoot = 'http://s-354531.gotocdn.com/bp_helper/'
+    var queryApi = apiRoot + 'advice'
+    var mmrApi = apiRoot + 'mmr'
+    var tipsApi = apiRoot + 'tips'
+    var evaluateApi = apiRoot + 'private_test/checkin'
+    var args = window.location.href.split('#')
+    var lang = isUndefined(args[1]) ? 'en-US' : args[1]
+    // var apiRoot = './'
+    // var queryApi = apiRoot + 'advice.json'
+    var debug = false
+  </script>
+  <script type="text/javascript" src="vue-2.3.4.min.js"></script>
+  <script type="text/javascript" src="presets.js?v=0.20"></script>
+  <script type="text/javascript">
+    function heroStaticsParser(staticsNode) {
+      var table = staticsNode.childNodes[0]
+      var tbody = table.childNodes[4]
+      var rows = tbody.childNodes
+      var statics = {}
+      for (var _i in rows) {
+        if (rows[_i].nodeName === 'TR') {
+          var cols = rows[_i].childNodes
+          try {
+            var portrait = cols[2].firstChild.alt
+            var hero = cols[3].innerText
+            var heroLevel = cols[4].innerText
+            var gamesPlayed = cols[5].innerText
+            var winPercent = cols[7].innerText
+            winPercent = winPercent === ' ' ? '-' : winPercent
+            statics[hero] = {
+              portrait: portrait,
+              hero: hero,
+              heroLevel: heroLevel,
+              gamesPlayed: gamesPlayed,
+              winPercent: winPercent
+            }
+          } catch (e) {
+            console.log(cols)
+          }
+        }
+      }
+      return statics
+    }
+
+    function mapStaticsParser(staticsNode) {
+      var table = staticsNode.childNodes[0]
+      var tbody = table.childNodes[4]
+      var rows = tbody.childNodes
+      var statics = {}
+      for (var _i in rows) {
+        if (rows[_i].nodeName === 'TR') {
+          var cols = rows[_i].childNodes
+          try {
+            var portrait = cols[2].firstChild.alt
+            var map = cols[4].innerText
+            var gamesPlayed = cols[5].innerText
+            var winPercent = cols[7].innerText
+            winPercent = winPercent === ' ' ? '-' : winPercent.split('.', 1)
+            statics[map] = {
+              portrait: portrait,
+              map: map,
+              gamesPlayed: gamesPlayed,
+              winPercent: winPercent
+            }
+          } catch (e) {
+            console.log(cols)
+          }
+        }
+      }
+      return statics
+    }
+  </script>
+  <script type="text/javascript">
+    Vue.config.devtools = true
+
+    var bph = new Vue({
+      el: '#app',
+      data: function () {
+        var _self = this
+        var langDefault = 'en-US'
+        var langs = window.langs[langDefault]
+        if (window.lang) {
+          langs = window.langs[window.lang]
+        }
+        var colsHeader = [
+          {
+            className: 'col-player',
+            title: langs['player'],
+          },
+          {
+            className: 'col-stars',
+            title: langs['Hero stars'],
+          },
+          {
+            className: 'col-map',
+            title: langs['Map'],
+          },
+          {
+            className: 'col-mmr',
+            title: 'MMR'
+          }
+        ]
+        return {
+          checkMedal: true,
+          sec: null,
+          timerSec: null,
+          retryTimes: 3,
+          retryTimeout: 3000,
+          lang: window.lang,
+          langMessage: window.lang,
+          heroList: window.heroList || [],
+          mapList: window.mapList || [],
+          regionList: [1, 2, 3, 5],  //区域列表
+          modeList: ['HeroLeague', 'TeamLeague', 'UnrankedDraft', 'QuickMatch'],
+          modeSelected: 'HeroLeague',
+          map: '',
+          langs: langs,
+          colsHeader: colsHeader,
+          players: {
+            left: [],
+            right: []
+          },
+          seq: [],
+          medalOnHover: null,
+          playerOnHover: null,
+          medalTipsX: 0,
+          medalTipsY: 0,
+          starTipsX: 0,
+          starTipsY: 0,
+          cpy: false,
+          mmrReady: 0,
+          lastRegion: null,
+          lastSide: null,
+          lastPlayersStr: null,
+          refreshSleep: false,
+        }
+      },
+      computed: {
+        autoCloseText: function () {
+          var sec = this.sec
+          var text = ''
+          if (sec === null) {
+            clearTimeout(this.timerSec)
+          } else {
+            if (sec <= 0) {
+              this.closeWindow()
+              clearTimeout(this.timerSec)
+            } else {
+              text = ' | ' + sec + this.langs[' seconds to close'] + this.langs['(Click here to stop)']
+              var _self = this;
+              (function () {
+                _self.timerSec = setTimeout(function () {
+                  _self.sec -= 1
+                }, 1000)
+              }())
+            }
+          }
+          return text
+        }
+      },
+      methods: {
+        setHeroList: function (heroList) {
+          this.heroList = heroList
+        },
+        setMapList: function (mapList) {
+          this.mapList = mapList
+        },
+        setLanguageForMessage: function (lang) {
+          this.langMessage = lang
+        },
+        setAutoCloseSeconds: function (sec) {
+          if (sec > 0) {
+            this.sec = sec
+          }
+        },
+        setMap: function (map) {
+          // if (this.mapList[map]) {
+          // this.map = map
+          // }
+          this.map = map
+        },
+        setPlayers: function (region, side, playersStr) {
+          this.refreshSleep = true
+          var _self = this
+          setTimeout(function () {
+            _self.refreshSleep = false
+          }, 5000)
+          this.lastRegion = region
+          this.lastSide = side
+          this.lastPlayersStr = playersStr
+          this.mmrReady = 0
+          region = region >> 0
+          if (this.regionList.indexOf(region) === -1) {
+            console.log('Illegal region input: ' + region)
+            return false
+          }
+          if (side === 'left') {
+            this.seq.push('left', 'right')
+          } else {
+            this.seq.push('right', 'left')
+          }
+          this.$set(this.players, 'left', [])
+          this.$set(this.players, 'right', [])
+          var playersArr = playersStr.split('|'),
+            i = 0, len = 10
+          for (; i < len; i++) {
+            if (!playersArr[i] || !playersArr[i].split) continue;
+            var info = playersArr[i].split('#')
+            var player = {
+              name: info[0],
+              tag: info[1],
+              hero: info[2],
+              heroStars: 0,
+              heroStatics: null,
+              mapStatics: null,
+              staticsParsed: false,
+              mmr: -1,
+              medalName: null,
+              medalPic: null,
+              medalDesc: null,
+              medalLink: null,
+              records: '-',
+              badge: 0
+            }
+            if (i < 5) {
+              this.players['left'].push(player)
+              this.getMMR(region, 'left', this.players['left'].length - 1, player.name + '_' + player.tag)
+            } else {
+              this.players['right'].push(player)
+              this.getMMR(region, 'right', this.players['right'].length - 1, player.name + '_' + player.tag)
+            }
+          }
+          this.getMedal(region, playersStr)
+        },
+        getPortraitFromList: function (player) {
+          var heroList = this.heroList
+          var localPic = null
+          for (var _i in heroList) {
+            var _hero = heroList[_i]
+            if (_hero.name && _hero.name === player.hero) {
+              var picName = _hero.acronym
+              localPic = 'statics/portrait/' + picName + '.png'
+            }
+          }
+          if (localPic) {
+            return localPic
+          } else if (player.portrait) {
+            return player.portrait
+          } else {
+            return 'statics/portrait/placeholder.png'
+          }
+        },
+        getColor: function (side) {
+          var seq = this.seq, color = 'normal'
+          switch (seq.indexOf(side)) {
+            case 0:
+              color = 'blue';
+              break;
+            case 1:
+              color = 'red';
+              break;
+            default:
+              break;
+          }
+          return color
+        },
+        getPlayerMMRtext: function (player) {
+          var mmr = this.getPlayerMMR(player)
+          if (mmr > 0) {
+            return mmr
+          } else if (mmr === -1) {
+            return this.langs['Loading']
+          } else if (mmr === -3) {
+            return this.langs['Overtime']
+          } else {
+            return '-'
+          }
+        },
+        getPlayerMMR: function (player) {
+          var mode = this.modeSelected
+          if (!mode) {
+            return this.langs['Chose Mode']
+          }
+          if (player.mmr <= 0) {
+            return player.mmr >> 0
+          }
+          for (var _i in player.mmr) {
+            if (player.mmr[_i].GameMode === mode) {
+              return player.mmr[_i].CurrentMMR >> 0
+            }
+          }
+          return -2
+        },
+        getAverage: function (side) {
+          var mode = this.modeSelected
+          if (!mode) {
+            return '-'
+          }
+          var playerList = this.players[side],
+            i = 0, len = playerList.length,
+            count = total = average = winsAverage = 0
+          for (; i < len; i++) {
+            var mmr = this.getPlayerMMR(playerList[i])
+            if (mmr > 0) {
+              total += mmr
+              count++
+            }
+          }
+          if (total && count) average = (total / count).toFixed(0)
+          return this.langs['Average MMR'] + (average ? ': ' + average : '-')
+        },
+        getOrderByDesc: function (players) {
+          var mode = this.modeSelected
+          if (!mode) {
+            return players
+          }
+          var orderedList = []
+          var mmrReflex = {}
+          var mmrList = []
+          for (var _i in players) {
+            var _player = players[_i]
+            var mmr = this.getPlayerMMR(_player)
+            if (mmr > 0 && mmrList.indexOf(mmr) === -1) {
+              mmrList.push(mmr)
+            }
+            if (mmrReflex[mmr] instanceof Array !== true) {
+              mmrReflex[mmr] = []
+            }
+            mmrReflex[mmr].push(_player)
+          }
+          mmrList.push(0, -1, -2, -3)
+          mmrList.sort(function (a, b) {
+            return b - a
+          })
+          for (var _i in mmrList) {
+            var _mmr = mmrList[_i]
+            for (var _j in mmrReflex[_mmr]) {
+              orderedList.push(mmrReflex[_mmr][_j])
+            }
+          }
+          return orderedList
+        },
+        getMedal: function (region, playersStr) {
+          if (!this.checkMedal) {
+            return false
+          }
+          var api = 'https://www.bphots.com/bp_helper/get/player/medals/' + region + '/'
+          var url = api + encodeURIComponent(playersStr.replace(/#/g, '_').replace(/\|/g, ',')) + '?lang=' + lang
+          this._getMedal(url)
+        },
+        _getMedal: function (url) {
+          var _self = this;
+          // this.checkMedal = false
+          _self._getData(url, function () {
+            if (this.status === 200) {
+              try {
+                var resp = JSON.parse(this.responseText)
+                if (!isUndefined(resp.medals) && !isUndefined(resp.medals[0])) {
+                  for (var i in resp.medals) {
+                    if (!isUndefined(resp.medals[i][0])) {
+                      var _medal = resp.medals[i][0]
+                      var side = i < 5 ? 'left' : 'right'
+                      var playerIdx = i % 5
+                      _self.$set(_self.players[side][playerIdx], 'medalName', _medal.name)
+                      _self.$set(_self.players[side][playerIdx], 'medalPic', _medal.pic)
+                      _self.$set(_self.players[side][playerIdx], 'medalDesc', _medal.desc)
+                      _self.$set(_self.players[side][playerIdx], 'medalLink', _medal.url)
+                    }
+                  }
+                }
+              } catch (e) {
+                return false
+              }
+            } else {
+              return false
+            }
+          })
+        },
+        getMMR: function (region, side, playerIdx, playerBattleTag) {
+          var api = 'https://api.hotslogs.com/Public/Players/' + region + '/'
+          var url = api + encodeURIComponent(playerBattleTag)
+          this._getMMR(url, side, playerIdx, this.retryTimes)
+        },
+        closeWindow: function () {
+          HideWindow()
+        },
+        _getMMR: function (url, side, playerIdx, retryTimes) {
+          var _self = this;
+          if (_self.players[side][playerIdx].mmr !== -1) {
+            return false
+          }
+          if (retryTimes <= 0) {
+            setTimeout((function () {
+              return function () {
+                _self.$set(_self.players[side][playerIdx], 'mmr', -3)
+              }
+            }()), _self.retryTimeout)
+            return false
+          }
+          _self._getData(url, function () {
+            var playerId = null
+            if (this.status === 200) {
+              try {
+                var resp = JSON.parse(this.responseText)
+                if (resp === null) {
+                  _self.$set(_self.players[side][playerIdx], 'mmr', -2)
+                } else {
+                  _self.$set(_self.players[side][playerIdx], 'mmr', resp.LeaderboardRankings)
+                  if (_self.players[side][playerIdx].hero) {
+                    playerId = resp.PlayerID
+                  }
+                }
+              } catch (e) {
+                _self.$set(_self.players[side][playerIdx], 'mmr', -2)
+                console.log(e)
+              }
+            } else {
+              _self.$set(_self.players[side][playerIdx], 'mmr', -2)
+            }
+            _self._getPlayerInfo(_self.players[side][playerIdx], playerId, _self.players[side][playerIdx].hero, _self.map)
+          })
+          setTimeout((function () {
+            return function () {
+              _self._getMMR(url, side, playerIdx, --retryTimes)
+            }
+          }()), _self.retryTimeout)
+        },
+        _getPlayerInfo: function (player, playerId, heroName, mapName) {
+          this.$set(player, 'heroStatics', {
+            portrait: 'statics/portrait/placeholder.png',
+            hero: heroName,
+            heroLevel: 0,
+            gamesPlayed: 0,
+            winPercent: '-'
+          })
+          if (playerId === null || heroName === 'Random') {
+            this._setHeroStar(player, 0)
+            return true
+          }
+          var url = 'https://www.hotslogs.com/Player/Profile?PlayerID=' + playerId
+          var _self = this;
+          _self._getData(url, function () {
+            if (this.status === 200) {
+              var htmlText = this.responseText
+              var begin = htmlText.indexOf('<table class="rgMasterTable" id="ctl00_MainContent_RadGridCharacterStatistics_ctl00"')
+              var end = htmlText.indexOf('<div id="ctl00_MainContent_RadGridCharacterStatistics_SharedCalendarContainer"')
+              if (begin !== -1 && end !== -1) {
+                var short = htmlText.slice(begin, end).replace(/ src="/g, ' alt="')
+                var staticsTable = document.createElement('div')
+                staticsTable.innerHTML = short
+                var statics = heroStaticsParser(staticsTable)
+                if (statics[heroName] !== undefined) {
+                  _self.$set(player, 'heroStatics', statics[heroName])
+                }
+              }
+              var begin = htmlText.indexOf('<table class="rgMasterTable" id="ctl00_MainContent_RadGridMapStatistics_ctl00"')
+              var end = htmlText.indexOf('<div id="ctl00_MainContent_RadGridMapStatistics_SharedCalendarContainer"')
+              if (begin !== -1 && end !== -1) {
+                var short = htmlText.slice(begin, end).replace(/ src="/g, ' alt="')
+                var staticsTable = document.createElement('div')
+                staticsTable.innerHTML = short
+                var statics = mapStaticsParser(staticsTable)
+                if (statics[mapName] !== undefined) {
+                  _self.$set(player, 'mapStatics', statics[mapName])
+                }
+              }
+              _self._getHeroStars(player)
+            }
+          })
+        },
+        _getHeroStars: function (player) {
+          var stars = 0
+          var percentStage = [
+            40,
+            45,
+            50,
+            55,
+            60
+          ]
+          var mod = -5
+          var gamesStage = [
+            3,
+            8,
+            13,
+            20,
+            28,
+            200
+          ]
+          var heroStatics = player.heroStatics
+          var winPercent = heroStatics.winPercent.replace(' %', '') >> 0
+          var gamesPlayed = heroStatics.gamesPlayed >> 0
+          for (var _i in percentStage) {
+            if (winPercent > percentStage[_i]) {
+              stars += 1
+            }
+          }
+          for (var _i in gamesStage) {
+            if (gamesPlayed > gamesStage[_i]) {
+              mod += 1
+            }
+          }
+          stars += mod
+          if (stars < 0) stars = 0
+          if (stars > 5) stars = 5
+          this._setHeroStar(player, stars)
+        },
+        _setHeroStar: function (player, stars) {
+          var _self = this
+          if (stars > 1) {
+            (function () {
+              var begin = 1
+              _self.$set(player, 'heroStars', begin++)
+              var heroStarsInterval = setInterval(function () {
+                if (begin <= stars) {
+                  _self.$set(player, 'heroStars', begin++)
+                } else {
+                  clearInterval(heroStarsInterval)
+                }
+              }, 300)
+            }())
+          } else {
+            this.$set(player, 'heroStars', stars)
+          }
+          this.mmrReady++
+          this.$set(player, 'staticsParsed', true)
+        },
+        _getData: function (url, callback) {
+          var req = new XMLHttpRequest()
+          req.open('GET', url, true)
+          req.setRequestHeader('Accept-Language', 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7')
+          req.onload = callback
+          req.ontimeout = function (e) {
+            console.log(e)
+          }
+          req.onerror = function (e) {
+            console.log(e)
+          }
+          req.send()
+        },
+        _getJSONP: function (url) {
+          var newScript = document.createElement("script");
+          newScript.setAttribute("type", "text/javascript");
+          newScript.setAttribute("src", url);
+          document.head.appendChild(newScript);
+        },
+        onMedalMouseenter: function (player) {
+          this.medalOnHover = player
+        },
+        onMedalMouseleave: function () {
+          this.medalOnHover = null
+        },
+        onMedalMousemove: function (ev) {
+          var medalTipsX = ev.clientX - 85
+          var medalTipsY = ev.clientY - 35
+          this.medalTipsX = medalTipsX < 0 ? 0 : medalTipsX
+          this.medalTipsY = medalTipsY < 0 ? 0 : medalTipsY
+        },
+        onStarsMouseenter: function (player) {
+          this.playerOnHover = player
+        },
+        onStarsMouseleave: function () {
+          this.playerOnHover = null
+        },
+        onStarsMousemove: function (ev) {
+          var starTipsX = ev.clientX - 105
+          var starTipsY = ev.clientY - 35
+          this.starTipsX = starTipsX < 0 ? 0 : starTipsX
+          this.starTipsY = starTipsY < 0 ? 0 : starTipsY
+        },
+        getPrefixUrl: function (url) {
+          if (/^\/\//.test(url)) {
+            url = 'https:' + url
+          } else {
+            if (url.indexOf('file://') !== -1) {
+              url = url.replace('file://', 'https://')
+            }
+          }
+          return url
+        },
+        refresh: function () {
+          if (this.refreshSleep) {
+            return
+          }
+          this.sec = null
+          var region = this.lastRegion
+          var side = this.lastSide
+          var playersStr = this.lastPlayersStr
+          if (region && side && playersStr) {
+            this.setPlayers(region, side, playersStr)
+          }
+        },
+        copy() {
+          let langs = window.langs[this.langMessage]
+          let left = this.getOrderByDesc(this.players.left);
+          let leftAverage = this.getAverage('left').slice(-4);
+          let copyLeftInfo = [];
+          console.log(left);
+          for (let item of left) {
+            copyLeftInfo.push({
+              name: item.name,
+              mmr: this.getPlayerMMRtext(item),
+              star: item.heroStars,
+              win: item.heroStatics.winPercent.replace('-', '').replace(' %', '')
+            })
+          }
+          let right = this.getOrderByDesc(this.players.right);
+          let rightAverage = this.getAverage('right').slice(-4);
+          //      console.log(leftAverage);
+          //      console.log(rightAverage);
+          let copyRightInfo = [];
+          for (let item of right) {
+            copyRightInfo.push({
+              name: item.name,
+              mmr: this.getPlayerMMRtext(item),
+              star: item.heroStars,
+              hero: item.hero,
+              win: item.heroStatics.winPercent.replace('-', '').replace(' %', '')
+            });
+          }
+          let self = this;
+          //      let abs = Math.abs(leftAverage - rightAverage);
+          let clipboard = new Clipboard('.btn-copy', {
+            text() {
+              let copyText = '';
+              let lHighStar = copyLeftInfo.filter(val => val.star === 5);
+              let rHighStar = copyRightInfo.filter(val => val.star === 5);
+              if (lHighStar.length === 0 && rHighStar.length === 0) {
+                lHighStar = copyLeftInfo.filter(val => val.star === 4);
+                rHighStar = copyRightInfo.filter(val => val.star === 4);
+              }
+              lHighStar.sort((a, b) => {
+                if (a.win < b.win) {
+                  return 1;
+                } else if (a.win > b.win) {
+                  return -1;
+                } else {
+                  return 0;
+                }
+              });
+              rHighStar.sort((a, b) => {
+                if (a.win < b.win) {
+                  return 1;
+                } else if (a.win > b.win) {
+                  return -1;
+                } else {
+                  return 0;
+                }
+              });
+              let maxLength = lHighStar.length + rHighStar.length;
+              let show = 6;
+              if (maxLength > show) {
+                copyText += langs['mmrReportRate'];
+                if (lHighStar.length > 3 && rHighStar.length < 3) {
+                  for (let i = 0; i < show - lHighStar.length; i++) {
+                    copyText += `[${langs['mmrLeft']}]${lHighStar[i].name}${lHighStar[i].win}% `;
+                  }
+                  for (let i = 0; i < rHighStar.length; i++) {
+                    copyText += `[${langs['mmrRight']}]${rHighStar[i].name}${rHighStar[i].win}% `;
+                  }
+                } else if (rHighStar.length > 3 && lHighStar.length < 3) {
+                  for (let i = 0; i < lHighStar; i++) {
+                    copyText += `[${langs['mmrLeft']}]${lHighStar[i].name}${lHighStar[i].win}% `;
+                  }
+                  for (let i = 0; i < show - rHighStar.length.length; i++) {
+                    copyText += `[${langs['mmrRight']}]${rHighStar[i].name}${rHighStar[i].win}% `;
+                  }
+                } else if (lHighStar.length > 3 && rHighStar.length > 3) {
+                  for (let i = 0; i < 3; i++) {
+                    copyText += `[${langs['mmrLeft']}]${lHighStar[i].name}${lHighStar[i].win}% `;
+                  }
+                  for (let i = 0; i < 3; i++) {
+                    copyText += `[${langs['mmrRight']}]${rHighStar[i].name}${rHighStar[i].win}% `;
+                  }
+                }
+                copyText += ',';
+              } else if (maxLength > 0) {
+                copyText += langs['mmrReportRate'];
+                for (let i = 0; i < lHighStar.length; i++) {
+                  copyText += `[${langs['mmrLeft']}]${lHighStar[i].name}${lHighStar[i].win}% `;
+                }
+                for (let i = 0; i < rHighStar.length; i++) {
+                  copyText += `[${langs['mmrRight']}]${rHighStar[i].name}${rHighStar[i].win}% `;
+                }
+                copyText += ',';
+              } else {
+                console.log(langs);
+                copyText += langs['mmrReport'];
+              }
+
+              if (leftAverage == 'MMR-') leftAverage = 0
+              if (rightAverage == 'MMR-') rightAverage = 0
+              if (leftAverage - rightAverage > 150) {
+                copyText += langs['mmrLeftSignificantlyHigher'];
+              } else if (leftAverage - rightAverage > 50) {
+                copyText += langs['mmrLeftHigher'];
+              } else if (rightAverage - leftAverage > 150) {
+                copyText += langs['mmrRightSignificantlyHigher'];
+              } else if (rightAverage - leftAverage > 50) {
+                copyText += langs['mmrRightHigher'];
+              } else {
+                copyText += langs['mmrRightEqual'];
+              }
+              copyText += ' - ' + langs['from'] + ' ' + langs['BpHelper'];
+              return copyText;
+            }
+          });
+
+          clipboard.on('error', function (e) {
+            console.log(e);
+          });
+          this.cpy = true;
+          let c = setTimeout(() => {
+            this.cpy = false;
+            clearTimeout(c);
+          }, 1800);
+        }
+      },
+      beforeMount: function () {
+        var _self = this
+        document.body.addEventListener('contextmenu', function (e) {
+          e = e || window.event
+          e.preventDefault()
+        })
+        document.body.addEventListener('keydown', function (e) {
+          e = e || window.event
+          e.preventDefault()
+        })
+        var lang = 'en-US'
+        var urlHeroList = 'https://www.bphots.com/bp_helper/get/herolist?callback=setHeroList&lang=' + lang
+        this._getJSONP(urlHeroList)
+        // var urlMapList = 'https://www.bphots.com/bp_helper/get/maplist?callback=setMapList&lang=' + lang
+        // this._getJSONP(urlMapList)
+        callInvoker('RequestLobby')
+      }
+    })
+
+    /*
+    setHeroList 设置英雄列表
+    参数:
+      heroList: 英雄列表
+    */
+    window.setHeroList = bph.setHeroList
+    /*
+    setHeroList 设置地图列表
+    参数:
+      heroList: 地图列表
+    */
+    window.setMapList = bph.setMapList
+    /*
+    Params:
+      region: 地区: Region (1=US, 2=EU, 3=KR, 5=CN) and BattleTag (Name_1234)
+      side: 玩家所属方，left 或 right
+      players: 玩家 ID 字符串，以 | 拼接，例如 bnetplayer#1234#Zeratul|bnetplayer#1234#Zeratul|bnetplayer#1234#Zeratul|bnetplayer#1234#Zeratul|bnetplayer#1234#Zeratul
+      map: 游戏地图
+    */
+    window.setMap = bph.setMap
+    window.setPlayers = bph.setPlayers
+    window.setLanguageForMessage = bph.setLanguageForMessage
+    window.setAutoCloseSeconds = bph.setAutoCloseSeconds
+  </script>
+</body>
+
+</html>

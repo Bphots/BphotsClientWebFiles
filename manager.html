@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>BPhots Settings</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link href="bootstrap.min.css" rel="stylesheet">
+  <link href="manager_style.css" rel="stylesheet">
+  <style type="text/css">
+    [v-cloak] {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="freeze"></div>
+  <div id="app" v-cloak>
+    <div class="container" v-show="currentTabShow">
+      <ul class="my-nav" role="tablist">
+        <li class="" v-for="tab of tabs">
+          <a class="" :class="{'active': currentTab === tab}" role="tab" aria-controls="home" aria-selected="true" v-text="__(tab)"
+            @click="setTab(tab)"></a>
+        </li>
+      </ul>
+      <div class="tab-content" style="padding: 0 1.5rem;">
+        <div class="tab-pane fade config" :class="{'active': currentTab === 'Configure', 'show': currentTabShow === 'Configure'}"
+          role="tabpanel" aria-labelledby="tab">
+          <div class="form-box" v-for="(group, groupName) of configItems">
+            <h3 v-text="__('Configure ' + groupName)"></h3>
+            <div style="margin: auto;">
+              <div class="form-inline form-config">
+                <div class="config-item form-group mt-3 col-12 row text-center" v-for="item of group">
+                  <div class="col-6">
+                    <label class="justify-content-start" :for="item.name" v-text="__(item.label)"></label>
+                    <p v-html="__(item.desc)"></p>
+                  </div>
+                  <div class="col-6 text-right my-align" v-if="item.type === 'text'">
+                    <input type="text" class="form-control textbox" :id="item.name" :placeholder="item.default">
+                  </div>
+                  <div class="col-6 text-right my-align" v-if="item.type === 'number'">
+                    <input type="number" class="form-control textbox" :id="item.name" :placeholder="item.default" :min="item.min" :max="item.max"
+                      v-model="config[item.name]" @change="saveConfigure">
+                  </div>
+                  <div class="col-6 text-right" v-if="item.type === 'switch'">
+                    <!--<button type="button" class="btn btn-md btn-toggle" :class="{'active': config[item.name]}" aria-pressed="false" autocomplete="off" @click="toggle(item)">-->
+                    <!--<div class="handle"></div>-->
+                    <!--</button>-->
+                    <div v-if="item.default == -1" class="my-btn" aria-pressed="false" autocomplete="off" disabled>
+                      <div class="my-btn-around">
+                        <div class="my-btn-check"></div>
+                      </div>
+                    </div>
+                    <div v-else class="my-btn" aria-pressed="false" autocomplete="off">
+                      <div v-if="item.name === 'SetService'" class="my-btn-around" :class="{'active': config[item.name]}" @click="toggleService(item)">
+                        <div class="my-btn-check" :class="{'active': config[item.name]}"></div>
+                      </div>
+                      <div v-else class="my-btn-around" :class="{'active': config[item.name]}" @click="toggle(item)">
+                        <div class="my-btn-check" :class="{'active': config[item.name]}"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 text-right my-align" v-if="item.type === 'select'">
+                    <select v-if="isArray(item.options)" class="form-control textbox" v-model="config[item.name]" @change="saveConfigure">
+                      <option v-for="(_optn, key) of item.options" :value="_optn" v-text="_optn" :key="key"></option>
+                    </select>
+                    <select v-if="!isArray(item.options)" class="form-control textbox" v-model="config[item.name]" @change="saveConfigure">
+                      <option v-for="(_optn, key) of item.options" :value="key" v-text="__(_optn)" :key="key"></option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade replays" :class="{'active': currentTab === 'Replays', 'show': currentTabShow === 'Replays'}" role="tabpanel"
+          aria-labelledby="tab">
+          <h3 v-text="__('Replays')"></h3>
+          <div class="container replays-container">
+            <div class="well">
+              <table class="table table-striped table-fixed-header">
+                <thead>
+                  <tr>
+                    <!-- <th>#</th> -->
+                    <th v-text="__('Created')"></th>
+                    <th v-text="__('Filename')"></th>
+                    <th v-text="__('HotsWeekUploadStatus')"></th>
+                    <th v-text="__('HotsLogsUploadStatus')"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(replay, key) of replayList" :key="key">
+                    <!-- <td v-text="key + 1"></td> -->
+                    <td v-text="getRealtime(replay['Created'])"></td>
+                    <td v-text="getRealname(replay['Filename'])"></td>
+                    <td v-text="__(uploadStatus[replay['HotsWeekUploadStatusText']])"></td>
+                    <td v-text="__(uploadStatus[replay['HotsApiUploadStatusText']])"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane about fade" :class="{'active': currentTab === 'About', 'show': currentTabShow === 'About'}">
+          <div class="main row">
+            <div class="logo col-md-6">
+              <img src="./statics/images/logo-300.png" alt="logo" title="logo" class="logo">
+            </div>
+            <div class="col-md-6">
+              <h4 v-text="__('Bphots')"></h4>
+              <p>
+                <span v-text="__('Bphots Version Label')"></span>
+                <span v-text="version"></span>
+              </p>
+            </div>
+          </div>
+          <div class="desc">
+            <p v-text="__('Bphots description')"></p>
+            <p style="margin-top: 150px">
+              <span v-text="__('Bphots Email Label')"></span>
+              <span v-text="email"></span>
+            </p>
+            <p>
+              <span v-text="__('Bphots Website Label')"></span>
+              <span v-text="website"></span>
+            </p>
+            <p v-if="lang === 'zh-CN'">
+              <span v-text="__('Bphots QQGroup Label')"></span>
+              <span v-text="qqGroup"></span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="vue-2.3.4.min.js"></script>
+  <!-- <script src="https://cdn.bootcss.com/vue/2.5.13/vue.js"></script> -->
+  <!-- <script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script> -->
+  <script type="text/javascript">
+    Vue.config.devtools = true
+
+      ; (function (exports) {
+
+        var args = window.location.hash.substr(1)
+        var lang = typeof args === 'undefined' ? 'en-US' : args
+        var langs = {
+          'zh-CN': {
+            'Configure': '设置',
+            'Replays': '录像',
+            'Big Data': '大数据',
+            'About': '关于',
+			'Configure Base': '基本',
+            'Configure BP Helper': 'BP 助手',
+            'Configure Intelligence': '情报',
+            'Configure Replays': '录像',
+            'Save': '保存',
+            'Auto Show/Hide Helper': '自动检测比赛',
+            'Auto Detect Hero and Map': '自动识别英雄和地图',
+            'Auto Show MMR': '自动显示对战情报',
+            'Auto Upload Replay to Hotslogs': '自动上传录像至 Hotslogs',
+            'Auto Upload Replay to Hotsweek': '自动上传录像至 背锅周报',
+            'MMR Auto Close Time': '对战情报自动关闭时间',
+            'Upload Strategy': '录像上传策略',
+            'Language for Bphots': '背锅助手语言',
+            'Language for Message': '复制给队友语言',
+            'Filename': '文件名',
+            'Created': '创建时间',
+            'HotsWeekUploadStatus': '背锅周报',
+            'HotsLogsUploadStatus': 'Hotslogs',
+            'Do not upload replays': '不上传录像',
+            'Upload new replays only': '只上传新录像',
+            'Upload all replays': '上传全部录像',
+			'Help Us Develop Database for BAN Recognition': '帮助我们完成Ban位英雄识别',
+			'Automatically start on game': '自动运行背锅助手',
+            'DESC: Auto Show/Hide Helper': '是否默认开启：自动检测比赛',
+            'DESC: Auto Detect Hero and Map': '是否默认开启：自动识别英雄和地图',
+            'DESC: Auto Show MMR': '是否默认开启：自动显示对战情报',
+            'DESC: Auto Upload Replay to Hotslogs': '将自动上传录像至Hotsapi和Hotslogs',
+            'DESC: Auto Upload Replay to Hotsweek': '将自动上传录像至背锅周报',
+            'DESC: MMR Auto Close Time': '设置对战情报自动关闭的时间（单位为秒，设置 0 代表不关闭）',
+            'DESC: Upload Strategy': '设置录像的上传策略',
+            'DESC: Language for Bphots': '此项为背锅助手的界面语言 (重启生效)',
+            'DESC: Language for Message': '此项为[发送给队友]的文本语言 (重启生效)',
+			'DESC: Help Us Develop Database for BAN Recognition': '自动上传Ban位数据，不影响正常使用',
+			'DESC: Automatically start on game': '检测并跟随风暴英雄客户端一同启动',
+            'Bphots': '背锅助手',
+            'Bphots Version Label': '版本号：',
+            'Bphots description': '背锅助手是小型工具软件，帮助风暴英雄的普通玩家进一步理解游戏并提高胜率。目前主要功能是在征召模式的英雄选择环节中，为玩家智能推荐最优英雄，让更多的人能够感受到风暴英雄的精髓和魅力。',
+            'Bphots Email Label': 'Email：',
+            'Bphots Website Label': '网址：',
+            'Bphots QQGroup Label': 'QQ群：',
+            'Replay Status: New': '新增',
+            'Replay Status: Uploading': '上传中',
+            'Replay Status: Completed': '完成',
+            'Replay Status: Failed': '失败',
+            'Replay Status: Disable': '停用'
+          },
+          'zh-TW': {
+            'Configure': '設定',
+            'Replays': '錄影',
+            'Big Data': '大數據',
+            'About': '關於',
+			'Configure Base': '基本',
+            'Configure BP Helper': 'BP 助手',
+            'Configure Intelligence': '情報',
+            'Configure Replays': '錄像',
+            'Save': '保存',
+            'Auto Show/Hide Helper': '自動檢測比賽',
+            'Auto Detect Hero and Map': '自動識別英雄和地圖',
+            'Auto Show MMR': '自動顯示對戰情報',
+            'Auto Upload Replay to Hotslogs': '自動上傳錄影至Hotslogs',
+            'Auto Upload Replay to Hotsweek': '自動上傳錄影至背鍋週報',
+            'MMR Auto Close Time': '對戰情報自動關閉時間',
+            'Upload Strategy': '錄影上傳策略',
+            'Language for Bphots': '背鍋助手語言',
+            'Language for Message': '複製給隊友語言',
+            'Filename': '檔名',
+            'Created': '創建時間',
+            'HotsWeekUploadStatus': '背鍋週報',
+            'HotsLogsUploadStatus': 'Hotslogs',
+            'Do not upload replays': '不上傳錄像',
+            'Upload new replays only': '只上傳新錄像',
+            'Upload all replays': '上傳全部錄像',
+			'Help Us Develop Database for BAN Recognition': '幫助我們完成Ban位英雄識別',
+			'Automatically start on game': '自動運行背鍋助手',
+            'DESC: Auto Show/Hide Helper': '是否默認開啟：自動檢測比賽',
+            'DESC: Auto Detect Hero and Map': '是否默認開啟：自動識別英雄和地圖',
+            'DESC: Auto Show MMR': '是否默認開啟：自動顯示對戰情報',
+            'DESC: Auto Upload Replay to Hotslogs': '將自動上傳錄影至Hotsapi和Hotslogs',
+            'DESC: Auto Upload Replay to Hotsweek': '將自動上傳錄影至背鍋週報',
+            'DESC: MMR Auto Close Time': '設定對戰情報自動關閉的時間（單位為秒，設定 0 代表不關閉）',
+            'DESC: Upload Strategy': '設置錄像的上傳策略',
+            'DESC: Language for Bphots': '此項為背鍋助手的介面語言 (重啟生效)',
+            'DESC: Language for Message': '此項為[發送給隊友]的文字語言 (重啟生效)',
+			'DESC: Help Us Develop Database for BAN Recognition': '自動上傳Ban位數據，不影響正常使用',
+			'DESC: Automatically start on game': '檢測並跟隨暴雪英霸客戶端一同啟動',
+            'Bphots': '背鍋助手',
+            'Bphots Version Label': '版本號：',
+            'Bphots description': '背鍋助手是小型工具軟體，幫助風暴英雄的普通玩家進一步理解遊戲並提高勝率。現時主要功能是在徵召模式的英雄選擇環節中，為玩家智慧推薦最優英雄，讓更多的人能够感受到風暴英雄的精髓和魅力。',
+            'Bphots Email Label': 'Email：',
+            'Bphots Website Label': '網址：',
+            'Bphots QQGroup Label': 'QQ群：',
+            'Replay Status: New': '新增',
+            'Replay Status: Uploading': '上傳中',
+            'Replay Status: Completed': '完成',
+            'Replay Status: Failed': '失敗',
+            'Replay Status: Disable': '停用'
+          },
+          'en-US': {
+            'Configure': 'Configure',
+            'Replays': 'Replays',
+            'Big Data': 'Big Data',
+            'About': 'About',
+			'Configure Base': 'Base',
+            'Configure BP Helper': 'BP Helper',
+            'Configure Intelligence': 'Intelligence',
+            'Configure Replays': 'Replays',
+            'Save': 'Save',
+            'Auto Show/Hide Helper': 'Enable match detection',
+            'Auto Detect Hero and Map': 'Enable character/map recognition',
+            'Auto Show MMR': 'Auto show MMR',
+            'Auto Upload Replay to Hotslogs': 'Auto Upload Replay to Hotslogs',
+            'Auto Upload Replay to Hotsweek': 'Auto Upload Replay to Hotsweek',
+            'MMR Auto Close Time': 'MMR window Auto Close Time',
+            'Upload Strategy': 'Replays upload Strategy',
+            'Language for Bphots': 'Language for Bphots',
+            'Language for Message': 'Language for Copy',
+            'Filename': 'Filename',
+            'Created': 'Created',
+            'HotsWeekUploadStatus': 'HotsWeek',
+            'HotsLogsUploadStatus': 'Hotslogs',
+            'Do not upload replays': 'Do not upload replays',
+            'Upload new replays only': 'Upload new replays only',
+            'Upload all replays': 'Upload all replays',
+			'Help Us Develop Database for BAN Recognition': 'Help Us Develop Database for BAN Recognition',
+			'Automatically start on game': 'Automatically start on game',
+            'DESC: Auto Show/Hide Helper': 'Enable auto detect match as default',
+            'DESC: Auto Detect Hero and Map': 'Enable auto detect hero and map as default',
+            'DESC: Auto Show MMR': 'Enable auto show MMR as default',
+            'DESC: Auto Upload Replay to Hotslogs': 'Enable auto upload replays to Hotsapi and Hotslogs',
+            'DESC: Auto Upload Replay to Hotsweek': 'Enable auto upload replays to Hotsweek',
+            'DESC: MMR Auto Close Time': 'Seconds for MMR auto close (0 for manuel close)',
+            'DESC: Upload Strategy': 'Strategy for replays\' uploading',
+            'DESC: Language for Bphots': 'Language for BpHelper\'s user-interface (Restart to apply)',
+            'DESC: Language for Message': 'Language for message that copy to mates (Restart to apply)',
+			'DESC: Help Us Develop Database for BAN Recognition': 'Automatically upload Ban slot selection. This doesn\'t affect your experience',
+			'DESC: Automatically start on game': 'Lanch the BP Hots program on game start',
+            'Bphots': 'HotsBpHelper',
+            'Bphots Version Label': 'Version: ',
+            'Bphots description': 'BP helper is a small tool that tries to help players improve their win rate.',
+            'Bphots Email Label': 'Email: ',
+            'Bphots Website Label': 'Website: ',
+            'Bphots QQGroup Label': 'QQ Group: ',
+            'Replay Status: New': 'New',
+            'Replay Status: Uploading': 'Uploading',
+            'Replay Status: Completed': 'Completed',
+            'Replay Status: Failed': 'Failed',
+            'Replay Status: Disable': 'Disable'
+          },
+          'ko-KR': {
+            'Configure': 'Configure',
+            'Replays': 'Replays',
+            'Big Data': 'Big Data',
+            'About': 'About',
+			'Configure Base': 'Base',
+            'Configure BP Helper': 'BP Helper',
+            'Configure Intelligence': 'Intelligence',
+            'Configure Replays': 'Replays',
+            'Save': 'Save',
+            'Auto Show/Hide Helper': 'Enable match detection',
+            'Auto Detect Hero and Map': 'Enable character/map recognition',
+            'Auto Show MMR': 'Auto show MMR',
+            'Auto Upload Replay to Hotslogs': 'Auto Upload Replay to Hotslogs',
+            'Auto Upload Replay to Hotsweek': 'Auto Upload Replay to Hotsweek',
+            'MMR Auto Close Time': 'MMR window Auto Close Time',
+            'Upload Strategy': 'Replays upload Strategy',
+            'Language for Bphots': 'Language for Bphots',
+            'Language for Message': 'Language for Copy',
+            'Filename': 'Filename',
+            'Created': 'Created',
+            'HotsWeekUploadStatus': 'HotsWeek',
+            'HotsLogsUploadStatus': 'Hotslogs',
+            'Do not upload replays': 'Do not upload replays',
+            'Upload new replays only': 'Upload new replays only',
+            'Upload all replays': 'Upload all replays',
+			'Help Us Develop Database for BAN Recognition': 'Help Us Develop Database for BAN Recognition',
+			'Automatically start on game': 'Automatically start on game',
+            'DESC: Auto Show/Hide Helper': 'Enable auto detect match as default',
+            'DESC: Auto Detect Hero and Map': 'Enable auto detect hero and map as default',
+            'DESC: Auto Show MMR': 'Enable auto show MMR as default',
+            'DESC: Auto Upload Replay to Hotslogs': 'Enable auto upload replays to Hotsapi and Hotslogs',
+            'DESC: Auto Upload Replay to Hotsweek': 'Enable auto upload replays to Hotsweek',
+            'DESC: MMR Auto Close Time': 'Seconds for MMR auto close (0 for manuel close)',
+            'DESC: Upload Strategy': 'Strategy for replays\' uploading',
+            'DESC: Language for Bphots': 'Language for BpHelper\'s user-interface (Restart to apply)',
+            'DESC: Language for Message': 'Language for message that copy to mates (Restart to apply)',
+			'DESC: Help Us Develop Database for BAN Recognition': 'Automatically upload Ban slot selection. This doesn\'t affect your experience',
+			'DESC: Automatically start on game': 'Lanch the BP Hots program on game start',
+            'Bphots': 'HotsBpHelper',
+            'Bphots Version Label': 'Version: ',
+            'Bphots description': 'BP helper is a small tool that tries to help players improve their win rate.',
+            'Bphots Email Label': 'Email: ',
+            'Bphots Website Label': 'Website: ',
+            'Bphots QQGroup Label': 'QQ Group: ',
+            'Replay Status: New': 'New',
+            'Replay Status: Uploading': 'Uploading',
+            'Replay Status: Completed': 'Completed',
+            'Replay Status: Failed': 'Failed',
+            'Replay Status: Disable': 'Disable'            
+          }
+        }
+        var uploadStatus = {
+          'None': 'Replay Status: New',
+          'Success': 'Replay Status: Completed',
+          'InProgress': 'Replay Status: Uploading',
+          'UploadError': 'Replay Status: Failed',
+          'Duplicate': 'Replay Status: Completed',
+          'AiDetected': 'Replay Status: Completed',
+          'CustomGame': 'Replay Status: Completed',
+          'PtrRegion': 'Replay Status: Completed',
+          'Incomplete': 'Replay Status: Completed',
+          'TooOld': 'Replay Status: Completed',
+          'Reserved': 'Replay Status: Completed',
+          'Disable': 'Replay Status: Disable'
+        }
+
+        var app = new Vue({
+          el: '#app',
+          data: function () {
+            var tabs = [
+              'Configure',
+              'Replays',
+              // 'Big Data',
+              'About'
+            ]
+            var configItems = {
+			  "Base": [
+                {
+                  name: 'SetService',
+                  label: 'Automatically start on game',
+                  type: 'switch',
+                  options: [0, 1],
+                  default: 0,
+                  desc: 'DESC: Automatically start on game'
+                },
+                {
+                  name: 'LanguageForBphots',
+                  label: 'Language for Bphots',
+                  type: 'select',
+                  options: {
+                    'en-US': 'English',
+                    'zh-CN': '简体中文',
+                    'zh-TW': '繁体中文',
+                    'ko-KR': '한국어'
+                  },
+                  default: 'en-US',
+                  desc: 'DESC: Language for Bphots'
+                },
+                {
+                  name: 'LanguageForMessage',
+                  label: 'Language for Message',
+                  type: 'select',
+                  options: {
+                    'en-US': 'English',
+                    'zh-CN': '简体中文',
+                    'zh-TW': '繁体中文',
+                    'ko-KR': '한국어'
+                  },
+                  default: 'en-US',
+                  desc: 'DESC: Language for Message'
+                }
+              ],
+              "BP Helper": [
+                {
+                  name: 'AutoShowHideHelper',
+                  label: 'Auto Show/Hide Helper',
+                  type: 'switch',
+                  options: [0, 1],
+                  default: 1,
+                  desc: 'DESC: Auto Show/Hide Helper'
+                },
+                {
+                  name: 'AutoDetectHeroAndMap',
+                  label: 'Auto Detect Hero and Map',
+                  type: 'switch',
+                  options: [0, 1],
+                  default: 1,
+                  desc: 'DESC: Auto Detect Hero and Map'
+                },
+                {
+                  name: 'UploadBanSample',
+                  label: 'Help Us Develop Database for BAN Recognition',
+                  type: 'switch',
+                  options: [0, 1],
+                  default: 1,
+                  desc: 'DESC: Help Us Develop Database for BAN Recognition'
+                },
+              ],
+              "Intelligence": [
+                {
+                  name: 'AutoShowMMR',
+                  label: 'Auto Show MMR',
+                  type: 'switch',
+                  options: [0, 1],
+                  default: 1,
+                  desc: 'DESC: Auto Show MMR'
+                },
+                {
+                  name: 'MMRAutoCloseTime',
+                  label: 'MMR Auto Close Time',
+                  type: 'number',
+                  min: 0,
+                  max: 60,
+                  default: 30,
+                  desc: 'DESC: MMR Auto Close Time'
+                }
+              ],
+              "Replays": [
+                {
+                  name: 'AutoUploadReplayToHotslogs',
+                  label: 'Auto Upload Replay to Hotslogs',
+                  type: 'switch',
+                  options: [0, 1],
+                  default: 1,
+                  desc: 'DESC: Auto Upload Replay to Hotslogs'
+                },
+                {
+                  name: 'AutoUploadReplayToHotsweek',
+                  label: 'Auto Upload Replay to Hotsweek',
+                  type: 'switch',
+                  options: [0, 1],
+                  default: -1,
+                  desc: 'DESC: Auto Upload Replay to Hotsweek'
+                },
+                {
+                  name: 'UploadStrategy',
+                  label: 'Upload Strategy',
+                  type: 'select',
+                  options: {
+                    0: 'Do not upload replays',
+                    1: 'Upload new replays only',
+                    2: 'Upload all replays'
+                  },
+                  default: 2,
+                  desc: 'DESC: Upload Strategy'
+                }
+              ]
+            }
+            var config = {}
+            for (var _i in configItems) {
+              for (var _j in configItems[_i]) {
+                var _item = configItems[_i][_j]
+                if (isUndefined(config[_item.name])) {
+                  config[_item.name] = _item.default
+                }
+              }
+            }
+            var version = null
+            var description = null
+            var email = 'support@bphots.com'
+            var website = 'www.bphots.com'
+            var qqGroup = '417011860'
+            return {
+              lang: lang,
+              langs: langs,
+              uploadStatus: uploadStatus,
+              tabs: tabs,
+              currentTab: 'Configure',
+              currentTabShow: 'Configure',
+              configItems: configItems,
+              config: [],
+              replayList: [],
+              version: version,
+              email: email,
+              website: website,
+              qqGroup: qqGroup
+            }
+          },
+          methods: {
+            __: function (word) {
+              if (isUndefined(this.lang)
+                || isUndefined(this.langs[this.lang])
+                || isUndefined(this.langs[this.lang][word])) {
+                return word
+              } else {
+                return this.langs[this.lang][word]
+              }
+            },
+            getRealname: function (path) {
+              var _tmp = path.split('\\')
+              var realname = _tmp.pop()
+              return realname
+            },
+            getRealtime: function (time) {
+              var _tmp = new Date(time)
+              var realtime = datetimeFormat(_tmp, 'yy-MM-dd hh:mm')
+              // var realtime = datetimeFormat(_tmp, 'yyyy-MM-dd hh:mm:ss')
+              return realtime
+            },
+            toggle: function (item) {
+              if (item.type === 'switch') {
+                this.$set(this.config, item.name, !this.config[item.name])
+                this.saveConfigure()
+              }
+            },
+            setIsServiceRunning: function (isOpen) {
+              let temp;
+              if (isOpen === 'false') {
+                temp = false;
+              }
+              if (isOpen === 'true') {
+                temp = true;
+              }
+              document.querySelector('.freeze').classList.remove('active');
+              this.$set(this.config, 'SetService', temp);
+            },
+            toggleService: function (item) {
+              if (item.type === 'switch') {
+                document.querySelector('.freeze').classList.add('active');
+                let localOpen;
+                if (!this.config[item.name] === true) {
+                  localOpen = '1';
+                }
+                if (!this.config[item.name] === false) {
+                  localOpen = '0';
+                }
+                setTimeout(function () {
+                  callInvoker('SetService', localOpen)
+                }, 0);
+              }
+            },
+            setTab: function (tab) {
+              this.currentTab = tab
+              callInvoker('SetTab', tab)
+            },
+            configure: function (optns) {
+              if (typeof optns === 'string') {
+                try {
+                  optns = JSON.parse(optns)
+                } catch (e) {
+                  console.log(e)
+                  return false
+                }
+              }
+              this.config = optns
+            },
+            populateAbout: function (optns) {
+              if (typeof optns === 'string') {
+                try {
+                  optns = JSON.parse(optns)
+                } catch (e) {
+                  console.log(e)
+                  return false
+                }
+                this.version = optns.Version
+              }
+            },
+            populateReplayFiles: function (optns) {
+              if (typeof optns === 'string') {
+                try {
+                  optns = JSON.parse(optns)
+                } catch (e) {
+                  console.log(e)
+                  return false
+                }
+              }
+              this.replayList = optns
+            },
+            updateReplayFile: function (optns) {
+              var replayList = this.replayList
+              console.log('File status updated:')
+              console.log(optns)
+              if (typeof optns === 'string') {
+                try {
+                  optns = JSON.parse(optns)
+                } catch (e) {
+                  console.log(e)
+                  return false
+                }
+              }
+              if (!replayList) {
+                console.log('Wrong replayList.');
+                return false
+              }
+              for (var _i in replayList) {
+                var _replay = replayList[_i]
+                if (optns['Filename'] === _replay['Filename']) {
+                  this.$delete(replayList, _i)
+                  this.$set(replayList, _i, optns)
+                  return true
+                }
+              }
+              this.replayList.unshift(optns)
+              return true
+            },
+            saveConfigure: function () {
+              console.log(this.config)
+              callInvoker('SaveConfig', JSON.stringify(this.config))
+            },
+            isArray: function (obj) {
+              return isArray(obj)
+            }
+          },
+          watch: {
+            currentTab: function (val) {
+              var _self = this
+                ; (setTimeout(function () {
+                  _self.currentTabShow = val
+                }, 0))
+            },
+            config: function (val) {
+              this.config = val
+              this.saveConfigure()
+            }
+          },
+          beforeMount: function () {
+            var _self = this
+            document.body.addEventListener('contextmenu', function (e) {
+              e = e || window.event
+              e.preventDefault()
+            })
+            document.body.addEventListener('keydown', function (e) {
+              e = e || window.event
+              if (!(e.ctrlKey === true && ['c', 'v', 'x', 'a', 'z'].indexOf(e.key) !== -1)) {
+                e.preventDefault()
+              }
+            })
+          }
+        })
+
+        function isUndefined(obj) {
+          return typeof obj === 'undefined'
+        }
+        function isArray(obj) {
+          if (!Array.isArray) {
+            Array.isArray = function (arg) {
+              return Object.prototype.toString.call(arg) === '[object Array]';
+            }
+          }
+          return Array.isArray(obj)
+        }
+
+        function callInvoker(method, params) {
+          if (isUndefined(window.CallbackObject) ||
+            isUndefined(window.CallbackObject.callback)) {
+            return false
+          }
+          console.log(method)
+          console.log(params)
+          //params.unshift(method)
+          window.CallbackObject.callback(method, params)
+        }
+
+        function datetimeFormat(date, fmt) {
+          var o = {
+            'y+': date.getFullYear(),
+            'M+': date.getMonth() + 1,
+            'd+': date.getDate(),
+            'h+': date.getHours(),
+            'm+': date.getMinutes(),
+            's+': date.getSeconds(),
+            'q+': Math.floor((date.getMonth() + 3) / 3),
+            'S+': date.getMilliseconds()
+          }
+          for (var k in o) {
+            if (new RegExp('(' + k + ')').test(fmt)) {
+              if (k === 'y+') {
+                fmt = fmt.replace(RegExp.$1, ('' + o[k]).substr(4 - RegExp.$1.length))
+              } else if (k === 'S+') {
+                var lens = RegExp.$1.length
+                lens = lens === 1 ? 3 : lens
+                fmt = fmt.replace(RegExp.$1, ('00' + o[k]).substr(('' + o[k]).length - 1, lens))
+              } else {
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
+              }
+            }
+          }
+          return fmt
+        }
+
+        exports.setTab = app.setTab
+        exports.configure = app.configure
+        exports.populateAbout = app.populateAbout
+        exports.populateReplayFiles = app.populateReplayFiles
+        exports.updateReplayFile = app.updateReplayFile
+
+        exports.setIsServiceRunning = app.setIsServiceRunning
+      }(window))
+  </script>
+
+</body>
+
+</html>
