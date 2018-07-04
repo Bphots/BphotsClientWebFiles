@@ -287,7 +287,7 @@ isSupportted && (function (exports) {
         if (!this.verified) { return false }
         this.chose = _chose === '' ? [] : _chose.split('|')
         var chose = this.chose
-        if (chose.length > 14) {
+        if (chose.length > 16) {
           return false
         }
         if (this.mapList[map]) {
@@ -304,7 +304,7 @@ isSupportted && (function (exports) {
             this.$set(bpQueue[i], 'heroID', null)
           }
         }
-        if (chose.length <= 14) {
+        if (chose.length <= 16) {
           this.queryAdvice(timestamp, client_patch, nonce, sign)
         }
         if (this.isUpdateBp === false) {
@@ -570,8 +570,9 @@ isSupportted && (function (exports) {
         var currentStep = this.bpQueue[this.chose.length]
         var stepInfo = [langs[this.teamPos[currentStep.team]]]
         var joinChar = ' '
-        if (this.langMessage === 'en-US') {
-		  stepInfo.push('#' + currentStep.pos)
+        if (langs === 'en-US') {
+          joinChar = ''
+          stepInfo.push(this.enDictNumber[currentStep.pos])
         } else {
           stepInfo.push(currentStep.pos + ' ' + langs['move'])
         }
@@ -587,7 +588,7 @@ isSupportted && (function (exports) {
           //arr.push(heroName + '(' + advice[i].point + ')')
           arr.push(advice[i].point + heroName)
         }
-        return stepInfo.join(joinChar) + ' ' + langs['recommend'] + ': ' + arr.join(', ') + ' - ' + langs['from'] + ' ' + langs['BpHelper']
+        return stepInfo.join(joinChar) + langs['recommend'] + ': ' + arr.join(', ') + ' - ' + langs['from'] + ' ' + langs['BpHelper']
       },
       _detailBg: function (bg) {
         var style = ''

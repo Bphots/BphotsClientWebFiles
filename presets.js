@@ -30,9 +30,9 @@ var langs = {
     'winPercent': '胜率',
     'Hero stars': '英雄熟练度',
     'Map': '地图',
-	'No advices': '没有英雄推荐',
-    'BP finished': '已完成',
-    'BP finished tips': '谨记：合作是胜利的前提',
+    'No advices': '没有英雄推荐',
+    'BP finished': 'BP 已完成',
+    'BP finished tips': '谨记：良好的合作是胜利的前提',
     'Hero name not exist': '英雄不存在',
     'Waiting for BP': '等待进入 禁选环节',
     'BP tips title': '手动模式说明',
@@ -53,13 +53,13 @@ var langs = {
     'UnrankedDraft': '非排名模式',
     'Chose Mode': '选择模式',
     'Source by hotslogs.com': '数据来源 hotslogs.com',
-    'Loading': '...',
+    'Loading': '加载中',
     'Overtime': '超时',
     'No data': '无数据',
     'Click button on the top-right to close': '可点击右上角按钮关闭',
     ' seconds to close': ' 秒后关闭',
     '(Click here to stop)': '（点此阻止关闭）',
-	'Need update': '版本已过期，请重启客户端进行更新',
+    'Need update': '版本已过期，请重启客户端进行更新',
     'Warrior': '战斗型',
     'Assassin': '刺杀型',
     'Support': '辅助型',
@@ -69,25 +69,30 @@ var langs = {
     'Diablo': '暗黑破坏神',
     'Retro': '复古',
     'Overwatch': '守望先锋',
-	'Tank': '坦克',
-	'Bruiser': '斗士',
-	'Ambusher': '近刺',
-	'Magician': '法师',
-	'Shooter': '射手',
-	'RangedMixed': '远程混合',
-	'RangedDisturbance': '远程扰乱',
-	'Healer': '治疗',
-	'Guardian': '守护',
+    'Tank': '坦克',
+    'Bruiser': '斗士',
+    'Ambusher': '近刺',
+    'Magician': '法师',
+    'Shooter': '射手',
+    'RangedMixed': '远程混合',
+    'RangedDisturbance': '远程扰乱',
+    'Healer': '治疗',
+    'Guardian': '守护',
     'mmrLeft': '左',
     'mmrRight': '右',
     'mmrReportRate': '胜率情报：',
     'mmrReport': '情报：',
     'mmrLeftHigher': '左方平均MMR高于右方',
-	'mmrLeftSignificantlyHigher': '左方平均MMR远高于右方',
-	'mmrRightHigher': '左方平均MMR低于右方',
-	'mmrRightSignificantlyHigher': '左方平均MMR远低于右方',
-	'mmrRightEqual': '本场平均MMR双方接近',
-	'Hots Patch Wrong': '暂不能识别此游戏版本英雄'
+    'mmrLeftSignificantlyHigher': '左方平均MMR远高于右方',
+    'mmrRightHigher': '左方平均MMR低于右方',
+    'mmrRightSignificantlyHigher': '左方平均MMR远低于右方',
+    'mmrRightEqual': '本场平均MMR双方接近',
+    'Hots Patch Wrong': '暂不能识别此游戏版本英雄',
+    'As': '使用',
+    'Helper': '配合',
+    'Counter': '针对',
+    'HottestTalent': '热门天赋',
+    'TipsOrigin': '* 攻略从 HeroesCounter.com 获取并改编',
   },
   'zh-TW': {
     'BpHelper': '背鍋助手',
@@ -107,9 +112,9 @@ var langs = {
     'winPercent': '勝率',
     'Hero stars': '英雄熟练度',
     'Map': '地圖',
-	'No advices': '沒有英雄推薦',
-    'BP finished': '已完成',
-    'BP finished tips': '謹記：合作是勝利的前提',
+    'No advices': '沒有英雄推薦',
+    'BP finished': 'BP 已完成',
+    'BP finished tips': '謹記：良好的合作是勝利的前提',
     'Hero name not exist': '英雄不存在',
     'Waiting for BP': '等待進入 禁選環節',
     'BP tips title': '手動模式說明',
@@ -130,13 +135,13 @@ var langs = {
     'UnrankedDraft': '非排名模式',
     'Chose Mode': '選擇模式',
     'Source by hotslogs.com': '數據来源 hotslogs.com',
-    'Loading': '...',
+    'Loading': '加載中',
     'Overtime': '超時',
     'No data': '無數據',
     'Click button on the top-right to close': '可點擊右上角按鈕關閉',
     ' seconds to close': ' 秒后關閉',
     '(Click here to stop)': '（點此阻止關閉）',
-	'Need update': '版本已過期，請重啓用戶端進行更新',
+    'Need update': '版本已過期，請重啓用戶端進行更新',
     'Warrior': '戰士',
     'Assassin': '刺客',
     'Support': '輔助',
@@ -146,28 +151,33 @@ var langs = {
     'Diablo': '暗黑破壞神',
     'Retro': '懷舊經典',
     'Overwatch': '鬥陣特攻',
-	'Tank': '坦克',
-	'Bruiser': '鬥士',
-	'Ambusher': '近戰刺客',
-	'Magician': '法師',
-	'Shooter': '射手',
-	'RangedMixed': '遠程混合',
-	'RangedDisturbance': '遠程擾亂',
-	'Healer': '治療',
-	'Guardian': '守護',
+    'Tank': '坦克',
+    'Bruiser': '鬥士',
+    'Ambusher': '近戰刺客',
+    'Magician': '法師',
+    'Shooter': '射手',
+    'RangedMixed': '遠程混合',
+    'RangedDisturbance': '遠程擾亂',
+    'Healer': '治療',
+    'Guardian': '守護',
     'mmrLeft': '左',
     'mmrRight': '右',
     'mmrReportRate': '勝率情報：',
     'mmrReport': '情報：',
     'mmrLeftHigher': '左方平均MMR高於右方',
-	'mmrLeftSignificantlyHigher': '左方平均MMR远高于右方',
-	'mmrRightHigher': '左方平均MMR遠高於右方',
-	'mmrRightSignificantlyHigher': '左方平均MMR遠低於右方',
-	'mmrRightEqual': '本場平均MMR雙方接近',
-	'Hots Patch Wrong': '暫不能識別此遊戲版本英雄'
+    'mmrLeftSignificantlyHigher': '左方平均MMR远高于右方',
+    'mmrRightHigher': '左方平均MMR遠高於右方',
+    'mmrRightSignificantlyHigher': '左方平均MMR遠低於右方',
+    'mmrRightEqual': '本場平均MMR雙方接近',
+    'Hots Patch Wrong': '暫不能識別此遊戲版本英雄',
+    'As': '使用',
+    'Helper': '配合',
+    'Counter': '針對',
+    'HottestTalent': '熱門天賦',
+    'TipsOrigin': '* 攻略從 HeroesCounter.com 獲取並改編'
   },
   'ko-KR': {
-    'BpHelper': 'BP Hots',
+    'BpHelper': 'bpHots',
     'from': 'from',
     'left': '왼쪽',
     'right': '오른쪽',
@@ -184,7 +194,7 @@ var langs = {
     'winPercent': 'Win Percent',
     'Hero stars': 'Proficiency',
     'Map': 'Map',
-	'No advices': 'No result',
+    'No advices': 'No result',
     'BP finished': 'BP 완성',
     'BP finished tips': 'Cooperation makes victory.',
     'Hero name not exist': '영웅이름 존재하지 않음',
@@ -207,13 +217,13 @@ var langs = {
     'UnrankedDraft': '비 순위 초안',
     'Chose Mode': '패션 것',
     'Source by hotslogs.com': '데이터 원본 hotslogs.com',
-    'Loading': '...',
-    'Overtime': 'OT',
+    'Loading': 'Loading',
+    'Overtime': 'Overtime',
     'No data': 'No data',
     'Click button on the top-right to close': 'Click button on the top-right to close',
     ' seconds to close': ' seconds to close',
     '(Click here to stop)': '(Click here to stop)',
-	'Need update': 'Your BpHots client need to be updated',
+    'Need update': 'Your BpHots client need to be updated',
     'Warrior': '전사',
     'Assassin': '암살자',
     'Support': '지원가',
@@ -223,28 +233,33 @@ var langs = {
     'Diablo': '디아블로',
     'Retro': '고전',
     'Overwatch': '오버워치',
-	'Tank': 'Tank',
-	'Bruiser': 'Bruiser',
-	'Ambusher': 'Ambusher',
-	'Magician': 'Magician',
-	'Shooter': 'Shooter',
-	'RangedMixed': 'RangedMixed',
-	'RangedDisturbance': 'RangedDisturbance',
-	'Healer': 'Healer',
-	'Guardian': 'Guardian',
+    'Tank': 'Tank',
+    'Bruiser': 'Bruiser',
+    'Ambusher': 'Ambusher',
+    'Magician': 'Magician',
+    'Shooter': 'Shooter',
+    'RangedMixed': 'RangedMixed',
+    'RangedDisturbance': 'RangedDisturbance',
+    'Healer': 'Healer',
+    'Guardian': 'Guardian',
     'mmrLeft': 'L',
     'mmrRight': 'R',
     'mmrReportRate': 'Win rate report: ',
     'mmrReport': 'Report: ',
     'mmrLeftHigher': 'The average MMR of the left team is higher.',
-	'mmrLeftSignificantlyHigher': 'The average MMR of the left team is significantly higher.',
-	'mmrRightHigher': 'The average MMR of the right team is higher.',
-	'mmrRightSignificantlyHigher': 'The average MMR of the right team is significantly higher.',
-	'mmrRightEqual': 'The average MMR of both teams are about the same.',
-	'Hots Patch Wrong': 'The version is too old.'
+    'mmrLeftSignificantlyHigher': 'The average MMR of the left team is significantly higher.',
+    'mmrRightHigher': 'The average MMR of the right team is higher.',
+    'mmrRightSignificantlyHigher': 'The average MMR of the right team is significantly higher.',
+    'mmrRightEqual': 'The average MMR of both teams are about the same.',
+    'Hots Patch Wrong': 'The version is too old.',
+    'As': 'As',
+    'Helper': 'Helper',
+    'Counter': 'Counter',
+    'HottestTalent': 'Popular Talent',
+    'TipsOrigin': '* Raiders Get and Adapt from HeroesCounter.com'
   },
   'en-US': {
-    'BpHelper': 'BP Hots',
+    'BpHelper': 'bpHots',
     'from': 'from',
     'left': 'Blue Team',
     'right': 'Red Team',
@@ -261,8 +276,8 @@ var langs = {
     'winPercent': 'Win Percent',
     'Hero stars': 'Proficiency',
     'Map': 'Map',
-	'No advices': 'No result',
-    'BP finished': 'Completed',
+    'No advices': 'No result',
+    'BP finished': 'BP completed',
     'BP finished tips': 'Cooperation makes victory.',
     'Hero name not exist': 'No hero data',
     'Waiting for BP': 'Waiting for start',
@@ -272,11 +287,11 @@ var langs = {
     'BP tips 2': '2. Use Ctrl+Shift+B to hide or show BpHelper.',
     'Copy advice': 'Copy to mates',
     'Copied': 'Copied',
-    'recommend': 'advice',
+    'recommend': 'recommend',
     'Average MMR': 'Average MMR',
     'Unselected': 'Unselected',
     'Ready': 'Ready',
-    'Finished': 'Finished',
+    'Finished': 'Completed',
     'Popular Talent': 'PopTalent',
     'QuickMatch': 'Quick Match',
     'HeroLeague': 'Hero League',
@@ -284,13 +299,13 @@ var langs = {
     'UnrankedDraft': 'Unranked Draft',
     'Chose Mode': 'Chose mode',
     'Source by hotslogs.com': 'Source by hotslogs.com',
-    'Loading': '...',
-    'Overtime': 'OT',
+    'Loading': 'Loading',
+    'Overtime': 'Overtime',
     'No data': 'No data',
     'Click button on the top-right to close': 'Click button on the top-right to close',
     ' seconds to close': ' seconds to close',
     '(Click here to stop)': '(Click here to stop)',
-	'Need update': 'Your BpHots client need to be updated',
+    'Need update': 'Your BpHots client need to be updated',
     'Warrior': 'Warrior',
     'Assassin': 'Assassin',
     'Support': 'Support',
@@ -300,25 +315,30 @@ var langs = {
     'Diablo': 'Diablo',
     'Retro': 'Retro',
     'Overwatch': 'Overwatch',
-	'Tank': 'Tank',
-	'Bruiser': 'Bruiser',
-	'Ambusher': 'Ambusher',
-	'Magician': 'Magician',
-	'Shooter': 'Shooter',
-	'RangedMixed': 'RangedMixed',
-	'RangedDisturbance': 'RangedDisturbance',
-	'Healer': 'Healer',
-	'Guardian': 'Guardian',
+    'Tank': 'Tank',
+    'Bruiser': 'Bruiser',
+    'Ambusher': 'Ambusher',
+    'Magician': 'Magician',
+    'Shooter': 'Shooter',
+    'RangedMixed': 'RangedMixed',
+    'RangedDisturbance': 'RangedDisturbance',
+    'Healer': 'Healer',
+    'Guardian': 'Guardian',
     'mmrLeft': 'L',
     'mmrRight': 'R',
     'mmrReportRate': 'Win rate report: ',
     'mmrReport': 'Report: ',
     'mmrLeftHigher': 'The average MMR of the left team is higher.',
-	'mmrLeftSignificantlyHigher': 'The average MMR of the left team is significantly higher.',
-	'mmrRightHigher': 'The average MMR of the right team is higher.',
-	'mmrRightSignificantlyHigher': 'The average MMR of the right team is significantly higher.',
-	'mmrRightEqual': 'The average MMR of both teams are about the same.',
-	'Hots Patch Wrong': 'The version is too old.'
+    'mmrLeftSignificantlyHigher': 'The average MMR of the left team is significantly higher.',
+    'mmrRightHigher': 'The average MMR of the right team is higher.',
+    'mmrRightSignificantlyHigher': 'The average MMR of the right team is significantly higher.',
+    'mmrRightEqual': 'The average MMR of both teams are about the same.',
+    'Hots Patch Wrong': 'The version is too old.',
+    'As': 'As',
+    'Helper': 'Helper',
+    'Counter': 'Counter',
+    'HottestTalent': 'Popular Talent',
+    'TipsOrigin': '* Raiders Get and Adapt from HeroesCounter.com'
   }
 }
 var bpQueue = [
@@ -326,161 +346,173 @@ var bpQueue = [
     action: 'ban',
     team: 0,
     pos: 1,
-    heroID: null 
+    heroID: null
   },
   {
     action: 'ban',
     team: 1,
     pos: 1,
-    heroID: null 
+    heroID: null
+  },
+  {
+    action: 'ban',
+    team: 0,
+    pos: 2,
+    heroID: null
+  },
+  {
+    action: 'ban',
+    team: 1,
+    pos: 2,
+    heroID: null
   },
   {
     action: 'pick',
     team: 0,
     pos: 1,
-    heroID: null 
+    heroID: null
   },
   {
     action: 'pick',
     team: 1,
     pos: 1,
-    heroID: null 
+    heroID: null
   },
   {
     action: 'pick',
     team: 1,
     pos: 2,
-    heroID: null 
+    heroID: null
   },
   {
     action: 'pick',
     team: 0,
     pos: 2,
-    heroID: null 
+    heroID: null
   },
   {
     action: 'pick',
     team: 0,
     pos: 3,
-    heroID: null 
+    heroID: null
   },
   {
     action: 'ban',
     team: 1,
-    pos: 2,
-    heroID: null 
+    pos: 3,
+    heroID: null
   },
   {
     action: 'ban',
     team: 0,
-    pos: 2,
-    heroID: null 
+    pos: 3,
+    heroID: null
   },
   {
     action: 'pick',
     team: 1,
     pos: 3,
-    heroID: null 
+    heroID: null
   },
   {
     action: 'pick',
     team: 1,
     pos: 4,
-    heroID: null 
+    heroID: null
   },
   {
     action: 'pick',
     team: 0,
     pos: 4,
-    heroID: null 
+    heroID: null
   },
   {
     action: 'pick',
     team: 0,
     pos: 5,
-    heroID: null 
+    heroID: null
   },
   {
     action: 'pick',
     team: 1,
     pos: 5,
-    heroID: null 
+    heroID: null
   }
 ]
 var tags = { // tag标签名称
   role: [{
-	key: 'Warrior',
-	color: '#4ca0ff',
+    key: 'Warrior',
+    color: '#4ca0ff',
     val: 1
   }, {
-	key: 'Assassin',
-	color: '#ef849b',
+    key: 'Assassin',
+    color: '#ef849b',
     val: 2
   }, {
-	key: 'Support',
-	color: '#02e9d9',
+    key: 'Support',
+    color: '#02e9d9',
     val: 3
   }, {
-	key: 'Specialist',
-	color: '#c06ef9',
+    key: 'Specialist',
+    color: '#c06ef9',
     val: 4
   }],
   universe: [{
-	key: 'Warcraft',
-	color: '#e1c393',
+    key: 'Warcraft',
+    color: '#e1c393',
     val: 1
   }, {
-	key: 'StarCraft',
-	color: '#4ca0ff',
+    key: 'StarCraft',
+    color: '#4ca0ff',
     val: 2
   }, {
-	key: 'Diablo',
-	color: '#ef849b',
+    key: 'Diablo',
+    color: '#ef849b',
     val: 3
   }, {
-	key: 'Retro',
-	color: '#4ca0ff',
+    key: 'Retro',
+    color: '#4ca0ff',
     val: 4
   }, {
-	key: 'Overwatch',
-	color: '#ff9900',
+    key: 'Overwatch',
+    color: '#ff9900',
     val: 5
   }],
   subclass: [{
-	key: 'Tank',
-	color: '#ff0099',
+    key: 'Tank',
+    color: '#ff0099',
     val: 1
   }, {
-	key: 'Bruiser',
-	color: '#ff0099',
+    key: 'Bruiser',
+    color: '#ff0099',
     val: 2
   }, {
-	key: 'Ambusher',
-	color: '#ff0099',
+    key: 'Ambusher',
+    color: '#ff0099',
     val: 3
   }, {
-	key: 'Magician',
-	color: '#ff0099',
+    key: 'Magician',
+    color: '#ff0099',
     val: 4
   }, {
-	key: 'Shooter',
-	color: '#ff0099',
+    key: 'Shooter',
+    color: '#ff0099',
     val: 5
   }, {
-	key: 'RangedMixed',
-	color: '#ff0099',
+    key: 'RangedMixed',
+    color: '#ff0099',
     val: 6
   }, {
-	key: 'RangedDisturbance',
-	color: '#ff0099',
+    key: 'RangedDisturbance',
+    color: '#ff0099',
     val: 7
   }, {
-	key: 'Healer',
-	color: '#ff0099',
+    key: 'Healer',
+    color: '#ff0099',
     val: 8
   }, {
-	key: 'Guardian',
-	color: '#ff0099',
+    key: 'Guardian',
+    color: '#ff0099',
     val: 9
   }]
 };

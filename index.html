@@ -30,13 +30,12 @@
             <div style="float: left;" v-if="map && chose.length < bpQueue.length">
               <span>&nbsp;-</span>
               <span :class="teamPos[bpQueue[chose.length].team]">{{ langs[teamPos[bpQueue[chose.length].team]] }}</span>
-              <span v-if="lang === 'en-US'">#{{ bpQueue[chose.length].pos }}</span>
-			  <!-- <span v-if="lang === 'en-US'">{{ enDictNumber[bpQueue[chose.length].pos] }}</span> -->
+              <span v-if="lang === 'en-US'">{{ enDictNumber[bpQueue[chose.length].pos] }}</span>
               <span v-if="lang !== 'en-US'">{{ bpQueue[chose.length].pos }} {{ langs['move'] }}</span>
               <span :class="bpQueue[chose.length].action">{{ langs[bpQueue[chose.length].action] }}</span>
             </div>
           </div>
-          <button v-show="!waiting && chose.length < 14" type="button" class="btn-copy" id="copy-advice" data-clipboard-action="copy"
+          <button v-show="!waiting && chose.length < 16" type="button" class="btn-copy" id="copy-advice" data-clipboard-action="copy"
             data-clipboard-target="#advice-ranking">{{ langs['Copy advice'] }}</button>
           <div class="cate" style="height: 20px;">
             <!-- 位置选择 -->
@@ -114,8 +113,8 @@
             </div>
             <div class="advice-detail-info">
               <div class="advice-detail-name" :class="{'sm': isLongName}">
-                <span class="placeholder" v-show="!adviceDetail.name && chose.length <= 13">{{ window.langs[window.lang]['Ready'] }}</span>
-                <span class="placeholder" v-show="chose.length > 13">{{ window.langs[window.lang]['Finished'] }}</span>
+                <span class="placeholder" v-show="!adviceDetail.name && chose.length <= 15">{{ window.langs[window.lang]['Ready'] }}</span>
+                <span class="placeholder" v-show="chose.length > 15">{{ window.langs[window.lang]['Finished'] }}</span>
                 <span v-if="adviceDetail.name">{{ adviceDetail.name.full }}</span>
               </div>
               <div class="advice-detail-point">
@@ -154,7 +153,7 @@
               <button type="button" @click="postEvaluate">Access</button>
             </div>
           </div> -->
-            <div v-if="verified && !waiting && !advices[chose.length] && chose.length < 14" class="advice-loading">
+            <div v-if="verified && !waiting && !advices[chose.length] && chose.length < 16" class="advice-loading">
               <div class="loader-wrap">
                 <img src="statics/basic/loading.gif" style='width: 50px; height: 50px;'>
               </div>
@@ -168,12 +167,12 @@
                 <p class="hint">{{ langs['BP tips 2'] }}</p>
               </div>
             </div>
-            <div v-if="!filteredAdvice['1'].length && !waiting && chose.length < 14" class="advice-loading">
+            <div v-if="!filteredAdvice['1'].length && !waiting && chose.length < 16" class="advice-loading">
               <div class="loader-wrap loader-wrap-begin">
                 <p class="hint" style="margin-top: 40px;">{{ langs['No advices'] }}</p>
               </div>
             </div>
-            <div v-if="verified && chose.length >= 14" class="advice-loading">
+            <div v-if="verified && chose.length >= 16" class="advice-loading">
               <div class="loader-wrap loader-wrap-finished">
                 <p class="hint title">{{ langs['BP finished'] }}</p>
                 <p class="hint">{{ langs['BP finished tips'] }}</p>
@@ -209,7 +208,6 @@
   <script type="text/javascript">
     var ignore = false
     var apiRoot = 'https://www.bphots.com/bp_helper/'
-    //var apiRoot = 'http://s-354531.gotocdn.com/bp_helper/'
     var queryApi = apiRoot + 'advice/v2'
     var mmrApi = apiRoot + 'mmr'
     var tipsApi = apiRoot + 'tips'
