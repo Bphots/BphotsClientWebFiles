@@ -6,8 +6,14 @@
   color: #fff;
   text-shadow: none;
 }
+html {
+  font-family: SourceHanSansCN,Microsoft YaHei,sans-serif;
+}
 .textbox {
   background-color: #d8d8d8;
+  color: #000;
+}
+.textbox>option {
   color: #000;
 }
 .bg-prime {
@@ -421,11 +427,13 @@
 /*rebuild by courtier*/
 * {
   font-size: 18px;
-  background-color: #1c1239;
   color: wheat;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: SourceHanSansCNTitle;
+}
+body {
+  background-color: #1c1239;
 }
 @font-face {
   font-family: SourceHanSansCN;
@@ -516,9 +524,8 @@ h3 {
 }
 /*About*/
 .about {
-  background-color: #1c1239;
+  /* background-color: #1c1239; */
   text-align: center;
-  font-family: SourceHanSansCN,Microsoft YaHei,sans-serif;
 }
 .about>.main {
   margin: 0 auto;
@@ -592,4 +599,103 @@ h3 {
 }
 .freeze.active {
   display: block;
+}
+.hotsweek {
+  text-align: center;
+}
+.hotsweek>.main {
+  margin: 0 auto;
+  padding: 0 0 4vw 0;
+  text-align: left;
+  flex-wrap: nowrap;
+  color: wheat;
+}
+.hotsweek>.main>div {
+  align-self: center;
+  padding: 0 10px;
+}
+.hotsweek>.desc {
+  /*text-align: left;*/
+  padding: 0 2rem 1rem 2rem;
+  line-height: 2;
+  color: wheat;
+}
+.click-text {
+  cursor: pointer;
+}
+.qrcode {
+  margin-bottom: 1rem;
+}
+.btn-go {
+  margin-top: 20px;
+  margin-bottom: 1rem;
+  width: 300px;
+  height: 60px;
+  background-color: rgba(69, 33, 125, 0.5);
+  border: 1px solid wheat;
+  font-size: 20px;
+}
+.btn-go>.svg-font {
+  width: 20px;
+  background-color: #00000000;
+  margin: 0 0 -2px 12px;
+  fill: wheat;
+}
+.btn-go:hover {
+  background-color: rgba(69, 33, 125, 1);  
+}
+.btn-go:active {
+  background-color: rgba(69, 33, 125, 0.5);  
+}
+.btn-go>.svg-font {
+  width: 20px;
+  background-color: #00000000;
+  margin: 0 0 -2px 12px;
+  fill: wheat;
+}
+.desc>p>.svg-font {
+  width: 18px;
+  background-color: #00000000;
+  margin: 0 0 -1px 8px;
+  fill: wheat;
+}
+.bind-player-text {
+  text-decoration: underline;
+}
+.pop-layer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -105px;
+  margin-left: -200px;
+  width: 400px;
+  height: 210px;
+  background-color: wheat;
+  z-index: 100;
+  color: #1c1239;
+}
+.pop-layer>h3 {
+  text-align: center;
+  font-family: SourceHanSansCNTitle,Microsoft YaHei,sans-serif;
+  font-size: 32px;
+  font-weight: 300;
+  margin: 20px auto;
+  padding: 0;
+}
+.hw-set-player-container {
+  width: 300px;
+  margin: 0 auto;
+}
+.hw-set-player-textbox {
+  border: 1px solid #6c757d;
+}
+.baffle {
+  /* display: none; */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000bd;
+  z-index: 50;
 }

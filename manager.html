@@ -5,6 +5,11 @@
   <title>BPhots Settings</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <link href="bootstrap.min.css" rel="stylesheet">
+  <script src="jquery-3.1.1.min.js"></script>
+  <script src="popper.min.js"></script>
+  <script src="bootstrap.min.js"></script>
+  <script src="qrcode.min.js"></script>
+  <script src="vue-2.3.4.min.js"></script>
   <link href="manager_style.css" rel="stylesheet">
   <style type="text/css">
     [v-cloak] {
@@ -16,6 +21,7 @@
 <body>
   <div class="freeze"></div>
   <div id="app" v-cloak>
+    <div class="baffle" v-show="popLayer !== ''" @click="popLayer = ''"></div>
     <div class="container" v-show="currentTabShow">
       <ul class="my-nav" role="tablist">
         <li class="" v-for="tab of tabs">
@@ -101,6 +107,42 @@
             </div>
           </div>
         </div>
+        <div class="tab-pane hotsweek fade" :class="{'active': currentTab === 'HotsWeek', 'show': currentTabShow === 'HotsWeek'}">
+          <div class="main">
+            <h3 v-text="__('HotsWeek')"></h3>
+          </div>
+          <div class="desc">
+            <p v-text="__('Hotsweek description')"></p>
+            <p align="center" @click="popLayer = 'hotsweekSetPlayer'" class="bind-player-text click-text" v-show="playerID && hwMode !== 'wechat'" v-html="playerInfo"></p>
+            <p align="center" v-show="hwMode === 'wechat'" v-html="__('Scan the QR code to subscribe')"></p>
+            <div align="center">
+              <div class="qrcode" v-show="hwMode === 'wechat'" id="qrcode"></div>
+              <button type="button" class="btn btn-go" v-show="hwMode === 'web'" v-html="getHotsweekButtonText()" @click="clickHotsweekButton()"></button>
+            </div>
+            <p align="center" class="click-text" v-show="hwMode === 'web'" @click="hwMode = 'wechat'" v-html="__('Change mode to wechat')"></p>
+            <p align="center" class="click-text" v-show="hwMode === 'wechat'" @click="hwMode = 'web'" v-html="__('Change mode to web')"></p>
+            <!-- <p align="center" class="click-text" v-show="hwMode === 'wechat' && lang !== 'zh-CN'" @click="hwMode = 'web'" v-html="__('Change mode to web')"></p> -->
+          </div>
+          <div class="pop-layer" v-show="popLayer === 'hotsweekSetPlayer'" id="hotsweekSetPlayer">
+            <h3 v-text="__('Set Player')"></h3>
+            <div class="input-group mb-3 hw-set-player-container" v-show="!playerID">
+              <div class="input-group-prepend">
+                <button id="playerNameInput" class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false" v-text="__(setPlayerRegion)"></button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" v-text="__('US')" @click="setPlayerRegion = 'US'" href="#"></a>
+                  <a class="dropdown-item" v-text="__('EU')" @click="setPlayerRegion = 'EU'" href="#"></a>
+                  <a class="dropdown-item" v-text="__('APAC')" @click="setPlayerRegion = 'APAC'" href="#"></a>
+                  <a class="dropdown-item" v-text="__('CN')" @click="setPlayerRegion = 'CN'" href="#"></a>
+                </div>
+              </div>
+              <input type="text" class="form-control hw-set-player-textbox" aria-label="Text input with dropdown button" placeholder="Nova#1234"
+                @keydown.stop="checkValidation($event)" @input="setPlayerName = $event.target.value">
+            </div>
+            <button type="button" v-if="playerID" class="btn btn-secondary" @click="clearPlayer()" v-text="__('Clear Player')"></button>
+            <button type="button" v-else class="btn btn-secondary" @click="setPlayer()" v-text="__('Verification')"></button>
+          </div>
+        </div>
         <div class="tab-pane about fade" :class="{'active': currentTab === 'About', 'show': currentTabShow === 'About'}">
           <div class="main row">
             <div class="logo col-md-6">
@@ -133,10 +175,6 @@
       </div>
     </div>
   </div>
-
-  <script src="vue-2.3.4.min.js"></script>
-  <!-- <script src="https://cdn.bootcss.com/vue/2.5.13/vue.js"></script> -->
-  <!-- <script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script> -->
   <script type="text/javascript">
     Vue.config.devtools = true
 
@@ -148,9 +186,10 @@
           'zh-CN': {
             'Configure': '设置',
             'Replays': '录像',
+            'HotsWeek': '背锅周报',
             'Big Data': '大数据',
             'About': '关于',
-			'Configure Base': '基本',
+            'Configure Basic': '基本',
             'Configure BP Helper': 'BP 助手',
             'Configure Intelligence': '情报',
             'Configure Replays': '录像',
@@ -171,8 +210,8 @@
             'Do not upload replays': '不上传录像',
             'Upload new replays only': '只上传新录像',
             'Upload all replays': '上传全部录像',
-			'Help Us Develop Database for BAN Recognition': '帮助我们完成Ban位英雄识别',
-			'Automatically start on game': '自动运行背锅助手',
+            'Help Us Develop Database for BAN Recognition': '帮助我们完成Ban位英雄识别',
+            'Automatically start on game': '自动运行背锅助手',
             'DESC: Auto Show/Hide Helper': '是否默认开启：自动检测比赛',
             'DESC: Auto Detect Hero and Map': '是否默认开启：自动识别英雄和地图',
             'DESC: Auto Show MMR': '是否默认开启：自动显示对战情报',
@@ -182,8 +221,8 @@
             'DESC: Upload Strategy': '设置录像的上传策略',
             'DESC: Language for Bphots': '此项为背锅助手的界面语言 (重启生效)',
             'DESC: Language for Message': '此项为[发送给队友]的文本语言 (重启生效)',
-			'DESC: Help Us Develop Database for BAN Recognition': '自动上传Ban位数据，不影响正常使用',
-			'DESC: Automatically start on game': '检测并跟随风暴英雄客户端一同启动',
+            'DESC: Help Us Develop Database for BAN Recognition': '自动上传Ban位数据，不影响正常使用',
+            'DESC: Automatically start on game': '检测并跟随风暴英雄客户端一同启动',
             'Bphots': '背锅助手',
             'Bphots Version Label': '版本号：',
             'Bphots description': '背锅助手是小型工具软件，帮助风暴英雄的普通玩家进一步理解游戏并提高胜率。目前主要功能是在征召模式的英雄选择环节中，为玩家智能推荐最优英雄，让更多的人能够感受到风暴英雄的精髓和魅力。',
@@ -194,14 +233,28 @@
             'Replay Status: Uploading': '上传中',
             'Replay Status: Completed': '完成',
             'Replay Status: Failed': '失败',
-            'Replay Status: Disable': '停用'
+            'Replay Status: Disable': '停用',
+            'Hotsweek description': '背锅周报是 3.0 版本推出的新功能，它每周向你提供一份个人周报，内容包括个人和全球战绩、有趣的数据分析以及每周热点。',
+            'Get your weekly report': '查看你的周报',
+            'Click to set player': '点击设置玩家信息',
+            'Scan the QR code to subscribe': '↓扫描二维码订阅↓',
+            'Change mode to wechat': '点击切换到微信订阅',
+            'Change mode to web': '点击切换到客户端订阅',
+            'Set Player': '设置玩家信息',
+            'Clear Player': '清除记录',
+            'Verification': '验证',
+            'US': '美服',
+            'EU': '欧服',
+            'APAC': '亚服',
+            'CN': '国服',
           },
           'zh-TW': {
             'Configure': '設定',
             'Replays': '錄影',
+            'HotsWeek': '背鍋週報',
             'Big Data': '大數據',
             'About': '關於',
-			'Configure Base': '基本',
+            'Configure Basic': '基本',
             'Configure BP Helper': 'BP 助手',
             'Configure Intelligence': '情報',
             'Configure Replays': '錄像',
@@ -222,8 +275,8 @@
             'Do not upload replays': '不上傳錄像',
             'Upload new replays only': '只上傳新錄像',
             'Upload all replays': '上傳全部錄像',
-			'Help Us Develop Database for BAN Recognition': '幫助我們完成Ban位英雄識別',
-			'Automatically start on game': '自動運行背鍋助手',
+            'Help Us Develop Database for BAN Recognition': '幫助我們完成Ban位英雄識別',
+            'Automatically start on game': '自動運行背鍋助手',
             'DESC: Auto Show/Hide Helper': '是否默認開啟：自動檢測比賽',
             'DESC: Auto Detect Hero and Map': '是否默認開啟：自動識別英雄和地圖',
             'DESC: Auto Show MMR': '是否默認開啟：自動顯示對戰情報',
@@ -233,8 +286,8 @@
             'DESC: Upload Strategy': '設置錄像的上傳策略',
             'DESC: Language for Bphots': '此項為背鍋助手的介面語言 (重啟生效)',
             'DESC: Language for Message': '此項為[發送給隊友]的文字語言 (重啟生效)',
-			'DESC: Help Us Develop Database for BAN Recognition': '自動上傳Ban位數據，不影響正常使用',
-			'DESC: Automatically start on game': '檢測並跟隨暴雪英霸客戶端一同啟動',
+            'DESC: Help Us Develop Database for BAN Recognition': '自動上傳Ban位數據，不影響正常使用',
+            'DESC: Automatically start on game': '檢測並跟隨暴雪英霸客戶端一同啟動',
             'Bphots': '背鍋助手',
             'Bphots Version Label': '版本號：',
             'Bphots description': '背鍋助手是小型工具軟體，幫助風暴英雄的普通玩家進一步理解遊戲並提高勝率。現時主要功能是在徵召模式的英雄選擇環節中，為玩家智慧推薦最優英雄，讓更多的人能够感受到風暴英雄的精髓和魅力。',
@@ -245,14 +298,28 @@
             'Replay Status: Uploading': '上傳中',
             'Replay Status: Completed': '完成',
             'Replay Status: Failed': '失敗',
-            'Replay Status: Disable': '停用'
+            'Replay Status: Disable': '停用',
+            'Hotsweek description': '背鍋週報是 3.0 版本推出的新功能，它每週向你提供一份個人週報，內容包括個人和全球戰績、有趣的資料分析以及每週熱點。',
+            'Get your weekly report': '查看你的的週報',
+            'Click to set player': '點此處設置玩家信息',
+            'Scan the QR code to subscribe': '↓掃描二維碼訂閱↓',
+            'Change mode to wechat': '點此切換到微信訂閱',
+            'Change mode to web': '點此切換到客戶端訂閱',
+            'Set Player': '設置玩家信息',
+            'Clear Player': '清除記錄',
+            'Verification': '驗證',
+            'US': '美服',
+            'EU': '歐服',
+            'APAC': '亞服',
+            'CN': '陸服',
           },
           'en-US': {
             'Configure': 'Configure',
             'Replays': 'Replays',
+            'HotsWeek': 'Hotsweek',
             'Big Data': 'Big Data',
             'About': 'About',
-			'Configure Base': 'Base',
+            'Configure Basic': 'Basic',
             'Configure BP Helper': 'BP Helper',
             'Configure Intelligence': 'Intelligence',
             'Configure Replays': 'Replays',
@@ -273,8 +340,8 @@
             'Do not upload replays': 'Do not upload replays',
             'Upload new replays only': 'Upload new replays only',
             'Upload all replays': 'Upload all replays',
-			'Help Us Develop Database for BAN Recognition': 'Help Us Develop Database for BAN Recognition',
-			'Automatically start on game': 'Automatically start on game',
+            'Help Us Develop Database for BAN Recognition': 'Help Us Develop Database for BAN Recognition',
+            'Automatically start on game': 'Automatically start on game',
             'DESC: Auto Show/Hide Helper': 'Enable auto detect match as default',
             'DESC: Auto Detect Hero and Map': 'Enable auto detect hero and map as default',
             'DESC: Auto Show MMR': 'Enable auto show MMR as default',
@@ -284,8 +351,8 @@
             'DESC: Upload Strategy': 'Strategy for replays\' uploading',
             'DESC: Language for Bphots': 'Language for BpHelper\'s user-interface (Restart to apply)',
             'DESC: Language for Message': 'Language for message that copy to mates (Restart to apply)',
-			'DESC: Help Us Develop Database for BAN Recognition': 'Automatically upload Ban slot selection. This doesn\'t affect your experience',
-			'DESC: Automatically start on game': 'Lanch the BP Hots program on game start',
+            'DESC: Help Us Develop Database for BAN Recognition': 'Automatically upload Ban slot selection. This doesn\'t affect your experience',
+            'DESC: Automatically start on game': 'Lanch the BP Hots program on game start',
             'Bphots': 'HotsBpHelper',
             'Bphots Version Label': 'Version: ',
             'Bphots description': 'BP helper is a small tool that tries to help players improve their win rate.',
@@ -296,14 +363,28 @@
             'Replay Status: Uploading': 'Uploading',
             'Replay Status: Completed': 'Completed',
             'Replay Status: Failed': 'Failed',
-            'Replay Status: Disable': 'Disable'
+            'Replay Status: Disable': 'Disable',
+            'Hotsweek description': 'Hotsweek is a new feature after patch 3.0. It gives you a weekly report about your personal record, global situation and data analysis.',
+            'Get your weekly report': 'Get report',
+            'Click to set player': 'Click to set player',
+            'Scan the QR code to subscribe': 'Scan the QR code to subscribe',
+            'Change mode to wechat': 'Click to subscribe by WeChat',
+            'Change mode to web': 'Click to subscribe by Bphots Client',
+            'Set Player': 'Set Player',
+            'Clear Player': 'Clear',
+            'Verification': 'Verification',
+            'US': 'US',
+            'EU': 'EU',
+            'APAC': 'APAC',
+            'CN': 'CN',
           },
           'ko-KR': {
             'Configure': 'Configure',
             'Replays': 'Replays',
+            'HotsWeek': 'Hotsweek',
             'Big Data': 'Big Data',
             'About': 'About',
-			'Configure Base': 'Base',
+            'Configure Basic': 'Basic',
             'Configure BP Helper': 'BP Helper',
             'Configure Intelligence': 'Intelligence',
             'Configure Replays': 'Replays',
@@ -324,8 +405,8 @@
             'Do not upload replays': 'Do not upload replays',
             'Upload new replays only': 'Upload new replays only',
             'Upload all replays': 'Upload all replays',
-			'Help Us Develop Database for BAN Recognition': 'Help Us Develop Database for BAN Recognition',
-			'Automatically start on game': 'Automatically start on game',
+            'Help Us Develop Database for BAN Recognition': 'Help Us Develop Database for BAN Recognition',
+            'Automatically start on game': 'Automatically start on game',
             'DESC: Auto Show/Hide Helper': 'Enable auto detect match as default',
             'DESC: Auto Detect Hero and Map': 'Enable auto detect hero and map as default',
             'DESC: Auto Show MMR': 'Enable auto show MMR as default',
@@ -335,8 +416,8 @@
             'DESC: Upload Strategy': 'Strategy for replays\' uploading',
             'DESC: Language for Bphots': 'Language for BpHelper\'s user-interface (Restart to apply)',
             'DESC: Language for Message': 'Language for message that copy to mates (Restart to apply)',
-			'DESC: Help Us Develop Database for BAN Recognition': 'Automatically upload Ban slot selection. This doesn\'t affect your experience',
-			'DESC: Automatically start on game': 'Lanch the BP Hots program on game start',
+            'DESC: Help Us Develop Database for BAN Recognition': 'Automatically upload Ban slot selection. This doesn\'t affect your experience',
+            'DESC: Automatically start on game': 'Lanch the BP Hots program on game start',
             'Bphots': 'HotsBpHelper',
             'Bphots Version Label': 'Version: ',
             'Bphots description': 'BP helper is a small tool that tries to help players improve their win rate.',
@@ -347,7 +428,20 @@
             'Replay Status: Uploading': 'Uploading',
             'Replay Status: Completed': 'Completed',
             'Replay Status: Failed': 'Failed',
-            'Replay Status: Disable': 'Disable'            
+            'Replay Status: Disable': 'Disable',
+            'Hotsweek description': 'Hotsweek is a new feature after patch 3.0. It gives you a weekly report about your personal record, global situation and data analysis.',
+            'Get your weekly report': 'Get report',
+            'Click to set player': 'Click to set player',
+            'Scan the QR code to subscribe': 'Scan the QR code to subscribe',
+            'Change mode to wechat': 'Click to subscribe by WeChat',
+            'Change mode to web': 'Click to subscribe by Bphots Client',
+            'Set Player': 'Set Player',
+            'Clear Player': 'Clear',
+            'Verification': 'Verification',
+            'US': 'US',
+            'EU': 'EU',
+            'APAC': 'APAC',
+            'CN': 'CN',
           }
         }
         var uploadStatus = {
@@ -371,11 +465,12 @@
             var tabs = [
               'Configure',
               'Replays',
+              'HotsWeek',
               // 'Big Data',
               'About'
             ]
             var configItems = {
-			  "Base": [
+              "Basic": [
                 {
                   name: 'SetService',
                   label: 'Automatically start on game',
@@ -501,6 +596,12 @@
             var email = 'support@bphots.com'
             var website = 'www.bphots.com'
             var qqGroup = '417011860'
+            var playerID = null
+            var playerInfo = ''
+            var hwMode = null
+            var setPlayerRegion = 'US'
+            var setPlayerName = ''
+            var popLayer = ''
             return {
               lang: lang,
               langs: langs,
@@ -514,7 +615,13 @@
               version: version,
               email: email,
               website: website,
-              qqGroup: qqGroup
+              qqGroup: qqGroup,
+              playerID: playerID,
+              playerInfo: playerInfo,
+              hwMode: hwMode,
+              setPlayerRegion: setPlayerRegion,
+              setPlayerName: setPlayerName,
+              popLayer: popLayer
             }
           },
           methods: {
@@ -538,10 +645,86 @@
               // var realtime = datetimeFormat(_tmp, 'yyyy-MM-dd hh:mm:ss')
               return realtime
             },
+            getCurrentDate: function () {
+              var _tmp = new Date()
+              var realtime = datetimeFormat(_tmp, 'yyyy.M.d')
+              return realtime
+            },
+            getHotsweekButtonText: function () {
+              if (this.playerID) {
+                var text = this.__('Get your weekly report') + ' ' + this.getCurrentDate()
+                text += '<svg version="1.1" class="svg-font" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve"><metadata> Svg Vector Icons : http://www.sfont.cn </metadata><g><path d="M945.5,45.4l-280.3-0.4c-24.2-0.1-29.9,13.7-12.9,30.8l104.4,105.1L417.7,520c-27.3,27.3-27.3,71.7,0,99c27.3,27.3,71.7,27.3,99,0l338.8-338.8l103.8,104.4c17,17.1,30.8,11.5,30.8-12.7l-0.6-281.4C989.3,66.3,969.7,45.6,945.5,45.4z M797.6,534.9c-28.6,0-51.9,22.9-52.5,51.4h0v193.6c0,38.7-31.4,70-70,70H185c-38.7,0-70-31.4-70-70V289.9c0-38.7,31.4-70,70-70h334.7v-0.1c27.5-1.7,49.2-24.5,49.2-52.4s-21.8-50.7-49.2-52.4v-0.1H150c-77.3,0-140,62.7-140,140v560c0,77.3,62.7,140,140,140h560c77.3,0,140-62.7,140-140V586.3h0C849.5,557.8,826.2,534.9,797.6,534.9z"/></g></svg>'
+              } else {
+                var text = this.__('Click to set player')
+                text += '<svg version="1.1" class="svg-font" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve"><metadata> Svg Vector Icons : http://www.sfont.cn </metadata><g><path d="M989.2,153.6c-7.7,27.5-14.6,53.1-33.6,68.5C789.1,357.1,655.7,524.5,504.7,674.6c-4,3.9-8.7,7.4-11.7,12c-64.2,100.1-176.4,112.8-274.6,150.5c-21.1,8.1-54.1-29.5-47.8-51.8c17.8-62.9,35.3-125.9,54.5-188.4c3.2-10.6,13.4-19.7,21.9-27.9c143.6-137.9,288-275,430.8-413.6c34.1-33.1,63.6-70.9,94.8-106.9C814.7-0.1,873.5-4,919.4,41c27.6,27.1,61.2,50.8,67.5,93.5c0.8,5.5,1.7,11.1,2.6,16.6C991.5,152.5,987.1,152.4,989.2,153.6z M728,199.6C588.8,339.1,449.8,478.3,313.9,614.5c23.4,23.7,49.3,50,72,72.9c139-136,279.3-273.2,418.8-409.7C776.3,248.8,750.4,222.4,728,199.6z M761.2,140.7c34.6,33.1,64.7,62,100.3,96.1c6.4-8.7,12.5-19.4,20.8-28c60-62.3,60.2-62.2-3.1-122c-1.4-1.3-2.6-2.7-4-4c-17.5-15.7-35.2-15.9-52.5,0C802.9,101.1,783.4,119.8,761.2,140.7z M245.9,761.9c32-12.9,57.3-23.1,78.9-31.8c-16.6-19.5-31.8-37.4-49.7-58.4C265.2,702.4,256.7,728.5,245.9,761.9z"/><path d="M446.8,990.5c-92.6,0-185.3,0.1-277.9-0.1c-50.7-0.1-95.5-13.8-129.6-54.7c-22.4-27-28.8-58.3-28.9-91.6c-0.3-184.3-1-368.7,0.2-553c0.6-99,61.7-157.9,160.9-158.5c100.1-0.6,200.2,0,300.4-0.2c21.9,0,42.8,1.7,45.6,29.4c2.1,20.3-14.5,30.5-47,30.5c-97.3,0.1-194.6-0.1-291.9,0.1C109,192.5,69.4,232.4,69.4,302.1c-0.1,177.8-0.1,355.5,0,533.3c0,55,37.1,94.3,92.6,94.5c189.9,0.7,379.9,0.6,569.8,0.1c44.9-0.1,74-32.2,74.2-80.8c0.5-121.6,0.2-243.3,0.4-364.9c0-9.3-2.2-21,2.5-27.3c7.8-10.6,21.2-25.5,30.6-24.4c9.8,1.1,18.5,18.5,26.1,29.8c2.6,3.9,0.6,11,0.6,16.6c0,120.7,0.2,241.4,0,362.1c-0.2,101.6-48.1,149.2-149.9,149.4C626.4,990.5,536.6,990.5,446.8,990.5z"/></g></svg>'
+                this.playerInfo = text
+              }
+              return text
+            },
             toggle: function (item) {
               if (item.type === 'switch') {
                 this.$set(this.config, item.name, !this.config[item.name])
                 this.saveConfigure()
+              }
+            },
+            clickHotsweekButton: function () {
+              if (this.playerID) {
+                this.gotoHotsweekReporter()
+              } else {
+                this.showLayerPlayerSet()
+              }
+            },
+            showLayerPlayerSet: function () {
+              this.popLayer = 'hotsweekSetPlayer'
+            },
+            setPlayer: function () {
+              var regionMapping = {
+                'US': 1,
+                'EU': 2,
+                'APAC': 3,
+                'CN': 5
+              }
+              var name = this.setPlayerName
+              var region = this.setPlayerRegion
+              name = name.replace('#', '_')
+              var url = 'https://www.bphots.com/week/api/query/player/id?callback=setHotsweekPlayerID&lang=' + this.lang.toLowerCase()
+              url += '&name=' + name + '&region=' + regionMapping[region]
+              _getJSONP(url)
+            },
+            gotoHotsweekReporter: function () {
+              var timestamp = Math.round(new Date().getTime() / 1000)
+              var weekNumber = Math.trunc((timestamp + 345600) / 604800);
+              var url = 'https://www.bphots.com/week/report/' + weekNumber + '/' + this.playerID
+              callInvoker('OpenExternalBrowser', url)
+            },
+            clearPlayer: function () {
+              callInvoker('SavePlayerId', '')
+              this.populateHotsWeek('')
+            },
+            setHotsweekPlayerID: function (params) {
+              if (!params) {
+                return
+              }
+              if (params.result === 'Success') {
+                var playerID = params.data.playerID
+                callInvoker('SavePlayerId', String(playerID))
+                this.playerID = playerID
+                this.popLayer = ''
+                this.populateHotsWeek(String(playerID))
+              } else {
+                alert(params.msg)
+              }
+            },
+            setHotsweekPlayerInfo: function (params) {
+              if (!params) {
+                return
+              }
+              if (params.result === 'Success') {
+                var text = params.data.region + ' - ' + params.data.name
+                text += '<svg version="1.1" class="svg-font" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve"><metadata> Svg Vector Icons : http://www.sfont.cn </metadata><g><path d="M989.2,153.6c-7.7,27.5-14.6,53.1-33.6,68.5C789.1,357.1,655.7,524.5,504.7,674.6c-4,3.9-8.7,7.4-11.7,12c-64.2,100.1-176.4,112.8-274.6,150.5c-21.1,8.1-54.1-29.5-47.8-51.8c17.8-62.9,35.3-125.9,54.5-188.4c3.2-10.6,13.4-19.7,21.9-27.9c143.6-137.9,288-275,430.8-413.6c34.1-33.1,63.6-70.9,94.8-106.9C814.7-0.1,873.5-4,919.4,41c27.6,27.1,61.2,50.8,67.5,93.5c0.8,5.5,1.7,11.1,2.6,16.6C991.5,152.5,987.1,152.4,989.2,153.6z M728,199.6C588.8,339.1,449.8,478.3,313.9,614.5c23.4,23.7,49.3,50,72,72.9c139-136,279.3-273.2,418.8-409.7C776.3,248.8,750.4,222.4,728,199.6z M761.2,140.7c34.6,33.1,64.7,62,100.3,96.1c6.4-8.7,12.5-19.4,20.8-28c60-62.3,60.2-62.2-3.1-122c-1.4-1.3-2.6-2.7-4-4c-17.5-15.7-35.2-15.9-52.5,0C802.9,101.1,783.4,119.8,761.2,140.7z M245.9,761.9c32-12.9,57.3-23.1,78.9-31.8c-16.6-19.5-31.8-37.4-49.7-58.4C265.2,702.4,256.7,728.5,245.9,761.9z"/><path d="M446.8,990.5c-92.6,0-185.3,0.1-277.9-0.1c-50.7-0.1-95.5-13.8-129.6-54.7c-22.4-27-28.8-58.3-28.9-91.6c-0.3-184.3-1-368.7,0.2-553c0.6-99,61.7-157.9,160.9-158.5c100.1-0.6,200.2,0,300.4-0.2c21.9,0,42.8,1.7,45.6,29.4c2.1,20.3-14.5,30.5-47,30.5c-97.3,0.1-194.6-0.1-291.9,0.1C109,192.5,69.4,232.4,69.4,302.1c-0.1,177.8-0.1,355.5,0,533.3c0,55,37.1,94.3,92.6,94.5c189.9,0.7,379.9,0.6,569.8,0.1c44.9-0.1,74-32.2,74.2-80.8c0.5-121.6,0.2-243.3,0.4-364.9c0-9.3-2.2-21,2.5-27.3c7.8-10.6,21.2-25.5,30.6-24.4c9.8,1.1,18.5,18.5,26.1,29.8c2.6,3.9,0.6,11,0.6,16.6c0,120.7,0.2,241.4,0,362.1c-0.2,101.6-48.1,149.2-149.9,149.4C626.4,990.5,536.6,990.5,446.8,990.5z"/></g></svg>'
+                this.playerInfo = text
+              } else {
+                alert(params.msg)
               }
             },
             setIsServiceRunning: function (isOpen) {
@@ -554,6 +737,18 @@
               }
               document.querySelector('.freeze').classList.remove('active');
               this.$set(this.config, 'SetService', temp);
+            },
+            checkValidation: function (e) {
+              if (this.debug || this.ignore) return false
+              e = e || window.event
+              var keysBlock = [
+                9,
+                112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123
+              ]
+              if (((e.ctrlKey || e.altKey) && [65, 67, 86].indexOf(e.keyCode) === -1) ||
+                keysBlock.indexOf(e.keyCode) !== -1) {
+                e.preventDefault()
+              }
             },
             toggleService: function (item) {
               if (item.type === 'switch') {
@@ -584,6 +779,26 @@
                 }
               }
               this.config = optns
+            },
+            populateHotsWeek: function (playerID, lang) {
+              if (lang) {
+                this.hwMode = lang === 'zh-CN' ? 'wechat' : 'web'
+              }
+              var qrcode = new QRCode(document.getElementById("qrcode"), {
+                text: "http://weixin.qq.com/r/CC08JLXEnOjjrfFH93ga",
+                width: 200,
+                height: 200,
+                colorDark: "#1c1239",
+                colorLight: "#f5deb3",
+                render: "table",
+                correctLevel: QRCode.CorrectLevel.H
+              })
+              this.playerID = Number(playerID)
+              if (playerID) {
+                var url = 'https://www.bphots.com/week/api/query/player/info?callback=setHotsweekPlayerInfo&lang=' + this.lang.toLowerCase()
+                url += '&id=' + playerID
+                _getJSONP(url)
+              }
             },
             populateAbout: function (optns) {
               if (typeof optns === 'string') {
@@ -681,6 +896,13 @@
           return Array.isArray(obj)
         }
 
+        function _getJSONP(url) {
+          var newScript = document.createElement("script");
+          newScript.setAttribute("type", "text/javascript");
+          newScript.setAttribute("src", url);
+          document.head.appendChild(newScript);
+        }
+
         function callInvoker(method, params) {
           if (isUndefined(window.CallbackObject) ||
             isUndefined(window.CallbackObject.callback)) {
@@ -721,10 +943,12 @@
 
         exports.setTab = app.setTab
         exports.configure = app.configure
+        exports.populateHotsWeek = app.populateHotsWeek
         exports.populateAbout = app.populateAbout
         exports.populateReplayFiles = app.populateReplayFiles
         exports.updateReplayFile = app.updateReplayFile
-
+        exports.setHotsweekPlayerInfo = app.setHotsweekPlayerInfo
+        exports.setHotsweekPlayerID = app.setHotsweekPlayerID
         exports.setIsServiceRunning = app.setIsServiceRunning
       }(window))
   </script>
