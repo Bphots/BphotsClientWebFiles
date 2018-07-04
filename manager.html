@@ -90,7 +90,7 @@
                     <!-- <th>#</th> -->
                     <th v-text="__('Created')"></th>
                     <th v-text="__('Filename')"></th>
-                    <th v-text="__('HotsWeekUploadStatus')"></th>
+                    <th v-text="__('HotsweekUploadStatus')"></th>
                     <th v-text="__('HotsLogsUploadStatus')"></th>
                   </tr>
                 </thead>
@@ -99,7 +99,7 @@
                     <!-- <td v-text="key + 1"></td> -->
                     <td v-text="getRealtime(replay['Created'])"></td>
                     <td v-text="getRealname(replay['Filename'])"></td>
-                    <td v-text="__(uploadStatus[replay['HotsWeekUploadStatusText']])"></td>
+                    <td v-text="__(uploadStatus[replay['HotsweekUploadStatusText']])"></td>
                     <td v-text="__(uploadStatus[replay['HotsApiUploadStatusText']])"></td>
                   </tr>
                 </tbody>
@@ -107,9 +107,9 @@
             </div>
           </div>
         </div>
-        <div class="tab-pane hotsweek fade" :class="{'active': currentTab === 'HotsWeek', 'show': currentTabShow === 'HotsWeek'}">
+        <div class="tab-pane hotsweek fade" :class="{'active': currentTab === 'Hotsweek', 'show': currentTabShow === 'Hotsweek'}">
           <div class="main">
-            <h3 v-text="__('HotsWeek')"></h3>
+            <h3 v-text="__('Hotsweek')"></h3>
           </div>
           <div class="desc">
             <p v-text="__('Hotsweek description')"></p>
@@ -186,7 +186,7 @@
           'zh-CN': {
             'Configure': '设置',
             'Replays': '录像',
-            'HotsWeek': '背锅周报',
+            'Hotsweek': '背锅周报',
             'Big Data': '大数据',
             'About': '关于',
             'Configure Basic': '基本',
@@ -205,7 +205,7 @@
             'Language for Message': '复制给队友语言',
             'Filename': '文件名',
             'Created': '创建时间',
-            'HotsWeekUploadStatus': '背锅周报',
+            'HotsweekUploadStatus': '背锅周报',
             'HotsLogsUploadStatus': 'Hotslogs',
             'Do not upload replays': '不上传录像',
             'Upload new replays only': '只上传新录像',
@@ -251,7 +251,7 @@
           'zh-TW': {
             'Configure': '設定',
             'Replays': '錄影',
-            'HotsWeek': '背鍋週報',
+            'Hotsweek': '背鍋週報',
             'Big Data': '大數據',
             'About': '關於',
             'Configure Basic': '基本',
@@ -270,7 +270,7 @@
             'Language for Message': '複製給隊友語言',
             'Filename': '檔名',
             'Created': '創建時間',
-            'HotsWeekUploadStatus': '背鍋週報',
+            'HotsweekUploadStatus': '背鍋週報',
             'HotsLogsUploadStatus': 'Hotslogs',
             'Do not upload replays': '不上傳錄像',
             'Upload new replays only': '只上傳新錄像',
@@ -316,7 +316,7 @@
           'en-US': {
             'Configure': 'Configure',
             'Replays': 'Replays',
-            'HotsWeek': 'Hotsweek',
+            'Hotsweek': 'Hotsweek',
             'Big Data': 'Big Data',
             'About': 'About',
             'Configure Basic': 'Basic',
@@ -335,7 +335,7 @@
             'Language for Message': 'Language for Copy',
             'Filename': 'Filename',
             'Created': 'Created',
-            'HotsWeekUploadStatus': 'HotsWeek',
+            'HotsweekUploadStatus': 'Hotsweek',
             'HotsLogsUploadStatus': 'Hotslogs',
             'Do not upload replays': 'Do not upload replays',
             'Upload new replays only': 'Upload new replays only',
@@ -381,7 +381,7 @@
           'ko-KR': {
             'Configure': 'Configure',
             'Replays': 'Replays',
-            'HotsWeek': 'Hotsweek',
+            'Hotsweek': 'Hotsweek',
             'Big Data': 'Big Data',
             'About': 'About',
             'Configure Basic': 'Basic',
@@ -400,7 +400,7 @@
             'Language for Message': 'Language for Copy',
             'Filename': 'Filename',
             'Created': 'Created',
-            'HotsWeekUploadStatus': 'HotsWeek',
+            'HotsweekUploadStatus': 'Hotsweek',
             'HotsLogsUploadStatus': 'Hotslogs',
             'Do not upload replays': 'Do not upload replays',
             'Upload new replays only': 'Upload new replays only',
@@ -465,7 +465,7 @@
             var tabs = [
               'Configure',
               'Replays',
-              'HotsWeek',
+              'Hotsweek',
               // 'Big Data',
               'About'
             ]
@@ -699,7 +699,7 @@
             },
             clearPlayer: function () {
               callInvoker('SavePlayerId', '')
-              this.populateHotsWeek('')
+              this.updateHotsweekPlayer('')
             },
             setHotsweekPlayerID: function (params) {
               if (!params) {
@@ -710,7 +710,7 @@
                 callInvoker('SavePlayerId', String(playerID))
                 this.playerID = playerID
                 this.popLayer = ''
-                this.populateHotsWeek(String(playerID))
+                this.updateHotsweekPlayer(String(playerID))
               } else {
                 alert(params.msg)
               }
@@ -780,10 +780,8 @@
               }
               this.config = optns
             },
-            populateHotsWeek: function (playerID, lang) {
-              if (lang) {
-                this.hwMode = lang === 'zh-CN' ? 'wechat' : 'web'
-              }
+            populateHotsweek: function (playerID) {
+              this.hwMode = this.lang === 'zh-CN' ? 'wechat' : 'web'
               var qrcode = new QRCode(document.getElementById("qrcode"), {
                 text: "http://weixin.qq.com/r/CC08JLXEnOjjrfFH93ga",
                 width: 200,
@@ -793,6 +791,9 @@
                 render: "table",
                 correctLevel: QRCode.CorrectLevel.H
               })
+              this.updateHotsweekPlayer(playerID)
+            },
+            updateHotsweekPlayer: function (playerID) {
               this.playerID = Number(playerID)
               if (playerID) {
                 var url = 'https://www.bphots.com/week/api/query/player/info?callback=setHotsweekPlayerInfo&lang=' + this.lang.toLowerCase()
@@ -943,7 +944,7 @@
 
         exports.setTab = app.setTab
         exports.configure = app.configure
-        exports.populateHotsWeek = app.populateHotsWeek
+        exports.populateHotsweek = app.populateHotsweek
         exports.populateAbout = app.populateAbout
         exports.populateReplayFiles = app.populateReplayFiles
         exports.updateReplayFile = app.updateReplayFile
