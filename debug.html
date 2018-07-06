@@ -115,7 +115,7 @@
                   :class="getStepClass(_step.idx)"
                   @mouseenter="showStepInfo(_step, $event)"
                   @mouseleave="hideStepInfo()">
-                  <img :src="_step.heroID ? 'statics/portrait/' + heroList[_step.heroID].basic + '.png' : 'statics/images/placeholder_' + getQueueClass(_side)[1] + '.png'">
+                  <img :src="_step.heroID ? 'statics/portrait/' + heroList[_step.heroID].basic + '.png' : 'statics/basic/placeholder_' + getQueueClass(_side)[1] + '.png'">
                 </div>
                 <div class="clear"></div>
               </div>
@@ -149,7 +149,7 @@
           </div> -->
           <div v-if="verified && !waiting && !advices[chose.length] && chose.length < 14" class="advice-loading">
             <div class="loader-wrap">
-              <img src="statics/images/loading.gif" style='width: 50px; height: 50px;'>
+              <img src="statics/basic/loading.gif" style='width: 50px; height: 50px;'>
             </div>
           </div>
           <div v-if="verified && waiting" class="advice-loading">
