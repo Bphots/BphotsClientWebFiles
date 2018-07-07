@@ -134,7 +134,7 @@
         <div class="hero-avatar-wrapper">
           <div class="hero-avatar">
             <template v-if="activeHero">
-              <img v-if="heroAvatar!='fail'" :src="'./statics/portrait/'+heroAvatar+'.png'">
+              <img v-if="heroAvatar!='fail'" :src="heroAvatarPic">
               <img v-else="heroAvatar!='fail'" src="./statics/portrait/placeholder.png">
             </template>
           </div>
@@ -404,10 +404,12 @@
           if (player.hero == undefined) return
           this.activeHero = player.hero
           this.heroAvatar = hero = player.hero.toLowerCase().replace(/\W/g, '')
-          fetch(`https://www.bphots.com/bp_helper/get/strategy/hero/name/${window.lang}?names=["${hero}"]`).then(function (response) {
+          this.heroAvatarPic = this.getPortraitFromList(player)
+          let heroCode = this.findHero(player.hero)
+          fetch(`https://www.bphots.com/bp_helper/get/strategy/hero/name/${window.lang}?names=["${heroCode}"]`).then(function (response) {
             return response.json()
           }).then(function (data) {
-            let { As, Counter, Helper, HottestTalent, Name } = data[hero]
+            let { As, Counter, Helper, HottestTalent, Name } = data[heroCode]
             self.tipsHeroName = Name
             self.heroTips = {
               As: As,
@@ -417,6 +419,7 @@
             }
           }).catch(function (e) {
             console.log('Oops, error')
+            console.log(e)
           })
         },
         setHeroList: function (heroList) {
@@ -506,15 +509,8 @@
           this.getMedal(region, playersStr)
         },
         getPortraitFromList: function (player) {
-          var heroList = this.heroList
-          var localPic = null
-          for (var _i in heroList) {
-            var _hero = heroList[_i]
-            if (_hero.name && _hero.name === player.hero) {
-              var picName = _hero.acronym
-              localPic = 'statics/portrait/' + picName + '.png'
-            }
-          }
+          var find = this.findHero(player.hero)
+          var localPic = find ? 'statics/portrait/' + find + '.png' : null
           if (localPic) {
             return localPic
           } else if (player.portrait) {
@@ -522,6 +518,17 @@
           } else {
             return 'statics/portrait/placeholder.png'
           }
+        },
+        findHero: function (heroName) {
+          var heroList = this.heroList
+          for (var _i in heroList) {
+            var _hero = heroList[_i]
+            if (_hero.name && _hero.name === heroName) {
+              // return _hero.acronym
+              return _hero.acronym.toLowerCase()
+            }
+          }
+          return false
         },
         getColor: function (side) {
           var seq = this.seq, color = 'normal'
