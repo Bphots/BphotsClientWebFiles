@@ -24,9 +24,8 @@
     <div class="baffle" v-show="popLayer !== ''" @click="popLayer = ''"></div>
     <div class="container" v-show="currentTabShow">
       <ul class="my-nav" role="tablist">
-        <li class="" v-for="tab of tabs">
-          <a class="" :class="{'active': currentTab === tab}" role="tab" aria-controls="home" aria-selected="true" v-text="__(tab)"
-            @click="setTab(tab)"></a>
+        <li v-for="tab of tabs" @click="setTab(tab)" :class="{'active': currentTab === tab}" role="tab" aria-controls="home" aria-selected="true" v-text="__(tab)">
+          <!-- <a class="" :class="{'active': currentTab === tab}" role="tab" aria-controls="home" aria-selected="true" v-text="__(tab)"></a> -->
         </li>
       </ul>
       <div class="tab-content" style="padding: 0 1.5rem;">
@@ -86,12 +85,12 @@
             <div class="well">
               <table class="table table-striped table-fixed-header">
                 <thead>
-                  <tr>
+                  <tr class="replays-header">
                     <!-- <th>#</th> -->
-                    <th v-text="__('Created')"></th>
-                    <th v-text="__('Filename')"></th>
-                    <th v-text="__('HotsweekUploadStatus')"></th>
-                    <th v-text="__('HotsLogsUploadStatus')"></th>
+                    <th @click="setSort('Created')" v-text="__('Created')" :class="{'up': sortHeader === 'CreatedUp', 'down': sortHeader === 'CreatedDown'}"></th>
+                    <th @click="setSort('Filename')" v-text="__('Filename')" :class="{'up': sortHeader === 'FilenameUp', 'down': sortHeader === 'FilenameDown'}"></th>
+                    <th @click="setSort('HotsweekUploadStatus')" v-text="__('HotsweekUploadStatus')" :class="{'up': sortHeader === 'HotsweekUploadStatusUp', 'down': sortHeader === 'HotsweekUploadStatusDown'}"></th>
+                    <th @click="setSort('HotsLogsUploadStatus')" v-text="__('HotsLogsUploadStatus')" :class="{'up': sortHeader === 'HotsLogsUploadStatusUp', 'down': sortHeader === 'HotsLogsUploadStatusDown'}"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -630,7 +629,9 @@
               setPlayerName: setPlayerName,
               popLayer: popLayer,
               initialized: '',
-              reportReady: reportReady
+              reportReady: reportReady,
+              sortHeader: '',
+              sortHeaderType: '',
             }
           },
           methods: {
@@ -890,7 +891,59 @@
             },
             isArray: function (obj) {
               return isArray(obj)
-            }
+            },
+            setSort: function(val) {
+              switch (val) {
+                case 'Created':
+                  if (this.sortHeaderType !== 'Created') {
+                    this.sortHeader = 'CreatedUp';
+                  } else {
+                    if (this.sortHeader !== 'CreatedUp') {
+                      this.sortHeader = 'CreatedUp';
+                    } else {
+                      this.sortHeader = 'CreatedDown';
+                    }
+                  }
+                  this.sortHeaderType = 'Created';
+                  break;
+                case 'Filename':
+                  if (this.sortHeaderType !== 'Filename') {
+                    this.sortHeader = 'FilenameUp';
+                  } else {
+                    if (this.sortHeader !== 'FilenameUp') {
+                      this.sortHeader = 'FilenameUp';
+                    } else {
+                      this.sortHeader = 'FilenameDown';
+                    }
+                  }
+                  this.sortHeaderType = 'Filename';
+                  break;
+                case 'HotsweekUploadStatus':
+                  if (this.sortHeaderType !== 'HotsweekUploadStatus') {
+                    this.sortHeader = 'HotsweekUploadStatusUp';
+                  } else {
+                    if (this.sortHeader !== 'HotsweekUploadStatusUp') {
+                      this.sortHeader = 'HotsweekUploadStatusUp';
+                    } else {
+                      this.sortHeader = 'HotsweekUploadStatusDown';
+                    }
+                  }
+                  this.sortHeaderType = 'HotsweekUploadStatus';
+                  break;
+                case 'HotsLogsUploadStatus':
+                  if (this.sortHeaderType !== 'HotsLogsUploadStatus') {
+                    this.sortHeader = 'HotsLogsUploadStatusUp';
+                  } else {
+                    if (this.sortHeader !== 'HotsLogsUploadStatusUp') {
+                      this.sortHeader = 'HotsLogsUploadStatusUp';
+                    } else {
+                      this.sortHeader = 'HotsLogsUploadStatusDown';
+                    }
+                  }
+                  this.sortHeaderType = 'HotsLogsUploadStatus';
+                  break;
+              }
+            },
           },
           watch: {
             currentTab: function (val) {
@@ -902,6 +955,51 @@
             config: function (val) {
               this.config = val
               this.saveConfigure()
+            },
+            sortHeader: function(newVal) {
+              console.log(newVal)
+              switch (newVal) {
+                case 'CreatedUp':
+                  this.replayList.sort((a, b) => {
+                    return new Date(a['Created']) - new Date(b['Created']);
+                  });
+                  break;
+                case 'CreatedDown':
+                  this.replayList.sort((a, b) => {
+                    return new Date(b['Created']) - new Date(a['Created']);
+                  });
+                  break;
+                case 'FilenameUp':
+                  this.replayList.sort((a, b) => {
+                    return a['Filename'].localeCompare(b['Filename']);
+                  });
+                  break;
+                case 'HotsweekUploadStatusUp':
+                  this.replayList.sort((a, b) => {
+                    return a['HotsweekUploadStatusText'].localeCompare(b['HotsweekUploadStatusText']);
+                  });
+                  break;
+                case 'HotsLogsUploadStatusUp':
+                  this.replayList.sort((a, b) => {
+                    return a['HotsApiUploadStatusText'].localeCompare(b['HotsApiUploadStatusText']);
+                  });
+                  break;
+                case 'FilenameDown':
+                  this.replayList.sort((a, b) => {
+                    return b['Filename'].localeCompare(a['Filename']);
+                  });
+                  break;
+                case 'HotsweekUploadStatusDown':
+                  this.replayList.sort((a, b) => {
+                    return b['HotsweekUploadStatusText'].localeCompare(a['HotsweekUploadStatusText']);
+                  });
+                  break;
+                case 'HotsLogsUploadStatusDown':
+                  this.replayList.sort((a, b) => {
+                    return b['HotsApiUploadStatusText'].localeCompare(a['HotsApiUploadStatusText']);
+                  });
+                  break;
+              }
             }
           },
           beforeMount: function () {
