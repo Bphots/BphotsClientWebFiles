@@ -87,10 +87,18 @@
                 <thead>
                   <tr class="replays-header">
                     <!-- <th>#</th> -->
-                    <th @click="setSort('Created')" v-text="__('Created')" :class="{'up': sortHeader === 'CreatedUp', 'down': sortHeader === 'CreatedDown'}"></th>
-                    <th @click="setSort('Filename')" v-text="__('Filename')" :class="{'up': sortHeader === 'FilenameUp', 'down': sortHeader === 'FilenameDown'}"></th>
-                    <th @click="setSort('HotsweekUploadStatus')" v-text="__('HotsweekUploadStatus')" :class="{'up': sortHeader === 'HotsweekUploadStatusUp', 'down': sortHeader === 'HotsweekUploadStatusDown'}"></th>
-                    <th @click="setSort('HotsLogsUploadStatus')" v-text="__('HotsLogsUploadStatus')" :class="{'up': sortHeader === 'HotsLogsUploadStatusUp', 'down': sortHeader === 'HotsLogsUploadStatusDown'}"></th>
+                    <th @click="setSort('Created')" :class="{'up': sortHeader === 'CreatedUp', 'down': sortHeader === 'CreatedDown'}">
+                      <span v-text="__('Created')"></span>
+                    </th>
+                    <th @click="setSort('Filename')" :class="{'up': sortHeader === 'FilenameUp', 'down': sortHeader === 'FilenameDown'}">
+                      <span v-text="__('Filename')"></span>
+                    </th>
+                    <th @click="setSort('HotsweekUploadStatus')" :class="{'up': sortHeader === 'HotsweekUploadStatusUp', 'down': sortHeader === 'HotsweekUploadStatusDown'}">
+                      <span v-text="__('HotsweekUploadStatus')"></span>
+                    </th>
+                    <th @click="setSort('HotsLogsUploadStatus')" :class="{'up': sortHeader === 'HotsLogsUploadStatusUp', 'down': sortHeader === 'HotsLogsUploadStatusDown'}">
+                      <span v-text="__('HotsLogsUploadStatus')"></span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -176,6 +184,9 @@
     </div>
   </div>
   <script type="text/javascript">
+    // $(window).on('scroll', () => {
+    //   if ($('.replays-header').get(0))
+    // });
     Vue.config.devtools = true
 
       ; (function (exports) {
