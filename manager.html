@@ -184,9 +184,6 @@
     </div>
   </div>
   <script type="text/javascript">
-    // $(window).on('scroll', () => {
-    //   if ($('.replays-header').get(0))
-    // });
     Vue.config.devtools = true
 
       ; (function (exports) {
@@ -873,6 +870,7 @@
               var replayList = this.replayList
               console.log('File status updated:')
               console.log(optns)
+              this.sortReplay(this.sortHeader);
               if (typeof optns === 'string') {
                 try {
                   optns = JSON.parse(optns)
@@ -955,19 +953,7 @@
                   break;
               }
             },
-          },
-          watch: {
-            currentTab: function (val) {
-              var _self = this
-                ; (setTimeout(function () {
-                  _self.currentTabShow = val
-                }, 0))
-            },
-            config: function (val) {
-              this.config = val
-              this.saveConfigure()
-            },
-            sortHeader: function(newVal) {
+            sortReplay: function(newVal) {
               console.log(newVal)
               switch (newVal) {
                 case 'CreatedUp':
@@ -1011,7 +997,22 @@
                   });
                   break;
               }
-            }
+            },
+          },
+          watch: {
+            currentTab: function (val) {
+              var _self = this
+                ; (setTimeout(function () {
+                  _self.currentTabShow = val
+                }, 0))
+            },
+            config: function (val) {
+              this.config = val
+              this.saveConfigure()
+            },
+            sortHeader: function(newVal) {
+              this.sortReplay(newVal);
+            },
           },
           beforeMount: function () {
             var _self = this
