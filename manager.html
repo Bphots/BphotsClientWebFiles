@@ -20,7 +20,7 @@
 
 <body>
   <div class="freeze"></div>
-  <div id="app" v-cloak>
+  <div id="app" v-cloak v-show="initialized != ''">
     <div class="baffle" v-show="popLayer !== ''" @click="popLayer = ''"></div>
     <div class="container" v-show="currentTabShow">
       <ul class="my-nav" role="tablist">
@@ -607,6 +607,7 @@
             var setPlayerRegion = 'US'
             var setPlayerName = ''
             var popLayer = ''
+            var initialized = ''
             var reportReady = false
             return {
               lang: lang,
@@ -628,6 +629,7 @@
               setPlayerRegion: setPlayerRegion,
               setPlayerName: setPlayerName,
               popLayer: popLayer,
+              initialized: '',
               reportReady: reportReady
             }
           },
@@ -798,6 +800,7 @@
             },
             setTab: function (tab) {
               this.currentTab = tab
+              this.initialized = '1'
               callInvoker('SetTab', tab)
             },
             configure: function (optns) {
@@ -913,6 +916,7 @@
                 e.preventDefault()
               }
             })
+            callInvoker('SetTab', 'default')
           }
         })
 
