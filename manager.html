@@ -120,8 +120,8 @@
               <div class="qrcode" v-show="hwMode === 'wechat'" id="qrcode"></div>
               <button type="button" class="btn btn-go" :disabled="!this.reportReady" v-show="hwMode === 'web'" v-html="getHotsweekButtonText()" @click="clickHotsweekButton()"></button>
             </div>
-            <p align="center" class="click-text" v-show="hwMode === 'web'" @click="hwMode = 'wechat'" v-html="__('Change mode to wechat')"></p>
-            <p align="center" class="click-text" v-show="hwMode === 'wechat'" @click="hwMode = 'web'" v-html="__('Change mode to web')"></p>
+            <span align="center" class="click-text" v-show="hwMode === 'web'" @click="hwMode = 'wechat'" v-html="__('Change mode to wechat')"></span>
+            <span align="center" class="click-text" v-show="hwMode === 'wechat'" @click="hwMode = 'web'" v-html="__('Change mode to web')"></span>
             <!-- <p align="center" class="click-text" v-show="hwMode === 'wechat' && lang !== 'zh-CN'" @click="hwMode = 'web'" v-html="__('Change mode to web')"></p> -->
           </div>
           <div class="pop-layer" v-show="popLayer === 'hotsweekSetPlayer'" id="hotsweekSetPlayer">
