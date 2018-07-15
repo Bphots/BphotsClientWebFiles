@@ -971,14 +971,14 @@
                     return a['Filename'].localeCompare(b['Filename']);
                   });
                   break;
-                case 'HotsweekUploadStatusUp':
+                  case 'HotsweekUploadStatusUp':
                   this.replayList.sort((a, b) => {
-                    return a['HotsweekUploadStatusText'].localeCompare(b['HotsweekUploadStatusText']);
+                    return uploadStatus[a['HotsweekUploadStatusText']].localeCompare(uploadStatus[b['HotsweekUploadStatusText']]);
                   });
                   break;
                 case 'HotsLogsUploadStatusUp':
                   this.replayList.sort((a, b) => {
-                    return a['HotsApiUploadStatusText'].localeCompare(b['HotsApiUploadStatusText']);
+                    return uploadStatus[a['HotsApiUploadStatusText']].localeCompare(uploadStatus[b['HotsApiUploadStatusText']]);
                   });
                   break;
                 case 'FilenameDown':
@@ -988,12 +988,12 @@
                   break;
                 case 'HotsweekUploadStatusDown':
                   this.replayList.sort((a, b) => {
-                    return b['HotsweekUploadStatusText'].localeCompare(a['HotsweekUploadStatusText']);
+                    return uploadStatus[b['HotsweekUploadStatusText']].localeCompare(uploadStatus[a['HotsweekUploadStatusText']]);
                   });
                   break;
                 case 'HotsLogsUploadStatusDown':
                   this.replayList.sort((a, b) => {
-                    return b['HotsApiUploadStatusText'].localeCompare(a['HotsApiUploadStatusText']);
+                    return uploadStatus[b['HotsApiUploadStatusText']].localeCompare(uploadStatus[a['HotsApiUploadStatusText']]);
                   });
                   break;
               }

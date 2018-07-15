@@ -728,25 +728,35 @@ h3 {
   border: 4px solid #1c1239;
   border-bottom: 4px solid #ccc;
 }
-/* .replays-header>th:nth-of-type(1)>span::after,
-.replays-header>th:nth-of-type(1)>span::before {
-  left: 90px;
-}
-.replays-header>th:nth-of-type(2)>span::after,
-.replays-header>th:nth-of-type(2)>span::before {
-  left: 70px;
-}
-.replays-header>th:nth-of-type(3)>span::after,
-.replays-header>th:nth-of-type(3)>span::before {
-  left: 100px;
-}
-.replays-header>th:nth-of-type(4)>span::after,
-.replays-header>th:nth-of-type(4)>span::before {
-  left: 100px;
-} */
 .replays-header>th.down>span::before {
   border-top-color: #fff;
 }
 .replays-header>th.up>span::after {
   border-bottom-color: #fff;
+}
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+.replays-container::-webkit-scrollbar
+{
+  display: block;
+  width: 10px;
+  height: 10px;
+}
+ 
+/*定义滚动条轨道 内阴影+圆角*/
+.replays-container::-webkit-scrollbar-track
+{
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 10px;
+  background-color: #000;
+}
+ 
+/*定义滑块 内阴影+圆角*/
+.replays-container::-webkit-scrollbar-thumb
+{
+  border-radius: 10px;
+  box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  background-color: #a3a3a3;;
+}
+.replays-container {
+  overflow-x: hidden;
 }
