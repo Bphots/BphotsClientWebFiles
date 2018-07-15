@@ -734,6 +734,9 @@ h3 {
 .replays-header>th.up>span::after {
   border-bottom-color: #fff;
 }
+.container {
+  padding-right: 0;
+}
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
 .replays-container::-webkit-scrollbar
 {
@@ -745,9 +748,9 @@ h3 {
 /*定义滚动条轨道 内阴影+圆角*/
 .replays-container::-webkit-scrollbar-track
 {
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.11);
   border-radius: 10px;
-  background-color: #000;
+  background-color: #00000024;
 }
  
 /*定义滑块 内阴影+圆角*/
@@ -755,7 +758,7 @@ h3 {
 {
   border-radius: 10px;
   box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-  background-color: #a3a3a3;;
+  background-color: #a3a3a37a;
 }
 .replays-container {
   overflow-x: hidden;
